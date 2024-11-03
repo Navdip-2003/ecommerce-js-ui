@@ -11,29 +11,29 @@ function Header() {
     <header className="flex items-center justify-between px-8 py-4 bg-white shadow-md">
       {/* Logo */}
       <div className="text-2xl font-bold text-gray-800">
-        <a href="/">Logo</a>
+        <Link to="/">Logo</Link>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex gap-6">
-        <a href="/home" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Home</a>
-        <a href="/shop" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Shop</a>
-        <a href="/product" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Product</a>
-        <a href="/pages" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Pages</a>
-        <a href="/blog" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Blog</a>
-        <a href="/buy-now" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Buy Now</a>
+        <Link to="/" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Home</Link>
+        <Link to="/shop" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Shop</Link>
+        <Link to="/product" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Product</Link>
+        <Link to="/pages" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Pages</Link>
+        <Link to="/blog" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Blog</Link>
+        <Link to="/buy-now" className="text-gray-700 hover:text-blue-600 uppercase font-bold">Buy Now</Link>
       </nav>
 
       {/* Conditional Authentication Links */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 items-center">
         {user ? (
           <>
             {/* Search and Cart Icons */}
-            <button className="text-black">
+            <button className="text-black hover:text-blue-600">
               <FontAwesomeIcon icon={faSearch} size="lg" />
             </button>
             <div className="relative">
-              <button className="text-black">
+              <button className="text-black hover:text-blue-600">
                 <FontAwesomeIcon icon={faBagShopping} size="lg" />
               </button>
               {/* Badge for Cart Item Count */}

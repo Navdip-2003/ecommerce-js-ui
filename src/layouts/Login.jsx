@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 function Login() {
-  const { login, error } = useAuth();
+  const { login,  error  } = useAuth();
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,8 +14,10 @@ function Login() {
     setLoading(true);
 
     try {
-      await login(mobileNumber, password); // Pass mobileNumber and password to login
-      navigate('/'); // Redirect to home or another page upon successful login
+      const res = await login(mobileNumber, password);
+      if (res) {
+        navigate('/'); // Redirect to home upon successful login
+      }
     } catch (err) {
       console.error("Login failed:", err);
     } finally {
