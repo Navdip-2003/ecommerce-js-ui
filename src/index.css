@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* Scrollbar css */
 @keyframes slideUp {
     0% {
       transform: translateY(20px);
@@ -17,3 +19,14 @@
     animation: slideUp 0.7s ease-in-out forwards;
   }
   
+
+  /* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+

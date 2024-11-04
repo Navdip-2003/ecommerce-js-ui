@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useFetch from '../hooks/useFetch';
 
 function ImageSlider() {
-  const { data, loading, error } = useFetch('https://ecommerce-js-backend-production.up.railway.app/banner/active');
+  const { data, loading, error } = useFetch('http://localhost:8080/banner/active');
   const images = data?.data || [];
 
   const settings = {
@@ -42,7 +42,7 @@ function ImageSlider() {
                 item.position === 'start' ? 'justify-start' : item.position === 'center' ? 'justify-center' : 'justify-end'
               }`}
             >
-              <div className="w-1/3 p-5">
+              <div className="w-1/2 p-5">
                 <h1 className="text-3xl md:text-5xl font-bold text-black">{item.mainText}</h1>
                 <h2 className="text-lg md:text-2xl text-black">{item.subText}</h2>
                 <a href={item.link} target="_blank" rel="noopener noreferrer">
@@ -59,10 +59,10 @@ function ImageSlider() {
   );
 }
 
-function NextArrow(props) {
+function NextArrow({ onClick }) {
   return (
     <div
-      {...props}
+      onClick={onClick}
       className="absolute top-1/2 right-5 transform -translate-y-1/2 text-2xl text-white cursor-pointer bg-gray-700 bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full z-10"
     >
       <FontAwesomeIcon icon={faChevronRight} />
@@ -70,10 +70,10 @@ function NextArrow(props) {
   );
 }
 
-function PrevArrow(props) {
+function PrevArrow({ onClick }) {
   return (
     <div
-      {...props}
+      onClick={onClick}
       className="absolute top-1/2 left-5 transform -translate-y-1/2 text-2xl text-white cursor-pointer bg-gray-700 bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full z-10"
     >
       <FontAwesomeIcon icon={faChevronLeft} />
