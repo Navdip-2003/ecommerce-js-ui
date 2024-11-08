@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ImageSlider from './layouts/Slider'
 import ProductList from './layouts/Product/ProductList';
+import Line from './layouts/line';
 
 
 function App() {
@@ -8,11 +9,11 @@ function App() {
 
   return (
     <>
-    <ImageSlider />
-    <ProductList />
-      <h1 className="text-3xl font-bold underline">
-      Hello world! {`${url}`}
-    </h1>
+      <ImageSlider />
+      <Line />
+      <ProductList />
+      <Line />
+      
     </>
   )
 }

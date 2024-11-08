@@ -4,9 +4,9 @@ import ProductCard from './ProductCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import product1 from '../../asset/images/product1.jpg';
-import product2 from '../../asset/images/product2.jpg';
-import product3 from '../../asset/images/product3.jpg';
+import product1 from '../../assets/images/product1.jpg';
+import product2 from '../../assets/images/product2.jpg';
+import product3 from '../../assets/images/product3.jpg';
 
 function ProductList() {
   const scrollRef = useRef(null);

@@ -11,72 +11,67 @@ function ImageSlider() {
   const images = data?.data || [];
 
   const settings = {
+    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000,
-    fade: true,
-    arrows: true,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+    autoplaySpeed: 3000,
   };
 
-  if (loading) return <div className="flex justify-center items-center h-[90vh]">Loading...</div>;
-  if (error) return <div className="text-red-500 text-center">Error: {error.message}</div>;
 
   return (
-    <div className="slider-container relative w-7/10 mx-auto overflow-hidden">
+    <div className="w-full mx-auto overflow-hidden">
       <Slider {...settings}>
-        {images.map((item) => (
-          <div key={item.id} className="relative w-full h-[70vh] overflow-hidden">
-            <img
-              src={item.imageUrl}
-              alt={item.mainText || `slide-${item.id}`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div
-              className={`absolute inset-0 flex items-center bg-opacity-50 ${
-                item.position === 'start' ? 'justify-start' : item.position === 'center' ? 'justify-center' : 'justify-end'
-              }`}
-            >
-              <div className="w-1/2 p-5">
-                <h1 className="text-3xl md:text-5xl font-bold text-black">{item.mainText}</h1>
-                <h2 className="text-lg md:text-2xl text-black">{item.subText}</h2>
-                <a href={item.link} target="_blank" rel="noopener noreferrer">
-                  <button className="mt-4 px-5 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition duration-200 ease-in-out">
-                    Shop Now
-                  </button>
-                </a>
-              </div>
-            </div>
+        {/* Slider Item 1 */}
+        <div className="relative">
+          <img
+            src="\src\assets\images\home-banner1.jpg"
+            alt="Fashion & Show"
+            className="w-full h-[650px]"
+          />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-full border-4 border-orange-500 p-4">
+            <h1 className="text-4xl font-bold text-orange-500">Womens Fashion</h1>
+            <p className="text-lg text-black">A World Fashion and Trendy Fashion Clothes</p>
+            <button className="bg-orange-500 text-black py-2 px-4 border-2 transition duration-500 ease-in-out rounded-full hover:bg-white hover:text-black">
+              Shop Now
+            </button>
           </div>
-        ))}
+        </div>
+
+        {/* Slider Item 2 */}
+        <div className="relative">
+          <img
+            src="\src\assets\images\home-banner2.jpg"
+            alt="Fashion & Show"
+            className="w-full h-[650px]"
+          />
+          <div className="absolute top-1/2 left-[25%] transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-full border-4 border-orange-500 p-4">
+            <h1 className="text-4xl font-bold text-orange-500">Mens Fashion</h1>
+            <p className="text-lg text-black">A World Fashion and Trendy Fashion Clothes</p>
+            <button className="bg-orange-500 text-black py-2 px-4 border-2 transition duration-500 ease-in-out rounded-full hover:bg-white hover:text-black">
+              Shop Now
+            </button>
+          </div>
+        </div>
+
+        {/* Slider Item 3 */}
+        <div className="relative">
+          <img
+            src="\src\assets\images\home-banner3.jpg"
+            alt="Fashion & Show"
+            className="w-full h-[650px]"
+          />
+          <div className="absolute top-1/2 left-[25%] transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-full border-4 border-orange-500 p-4">
+            <h1 className="text-4xl font-bold text-orange-500">Kids Fashion</h1>
+            <p className="text-lg text-black">A World Fashion and Trendy Fashion Clothes</p>
+            <button className="bg-orange-500 text-black py-2 px-4 border-2 transition duration-500 ease-in-out rounded-full hover:bg-white hover:text-black">
+              Shop Now
+            </button>
+          </div>
+        </div>
       </Slider>
-    </div>
-  );
-}
-
-function NextArrow({ onClick }) {
-  return (
-    <div
-      onClick={onClick}
-      className="absolute top-1/2 right-5 transform -translate-y-1/2 text-2xl text-white cursor-pointer bg-gray-700 bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full z-10"
-    >
-      <FontAwesomeIcon icon={faChevronRight} />
-    </div>
-  );
-}
-
-function PrevArrow({ onClick }) {
-  return (
-    <div
-      onClick={onClick}
-      className="absolute top-1/2 left-5 transform -translate-y-1/2 text-2xl text-white cursor-pointer bg-gray-700 bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full z-10"
-    >
-      <FontAwesomeIcon icon={faChevronLeft} />
     </div>
   );
 }
