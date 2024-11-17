@@ -25,7 +25,7 @@ function Header() {
         <div className="text-md text-center mx-auto">Worldwide Express Shipping</div>
         <div className="flex space-x-6">
           <Link to="/login" className="text-gray-200 hover:text-gray-400 text-md font-bold">LOGIN</Link>
-          <Link to="/create-account" className="text-gray-200 hover:text-gray-400 text-md font-bold">REGISTER</Link>
+          <Link to="/register" className="text-gray-200 hover:text-gray-400 text-md font-bold">REGISTER</Link>
         </div>
       </div>
 
@@ -38,8 +38,8 @@ function Header() {
 
         {/* Navigation */}
         <nav className="flex space-x-8 text-lg font-semibold">
-          <Link to="/" className="text-black hover:text-gray-600 font-bold">HOME</Link>
-          <Link to="/shop" className="text-black hover:text-gray-600 font-bold">SHOP</Link>
+          <Link to="/home" className="text-black hover:text-gray-600 font-bold">HOME</Link>
+          <Link to="/retailer-dashboard" className="text-black hover:text-gray-600 font-bold">SHOP</Link>
           <Link to="/about-us" className="text-black hover:text-gray-600 font-bold">ABOUT US</Link>
           <Link to="/contact" className="text-black hover:text-gray-600 font-bold">CONTACT</Link>
         </nav>
@@ -63,7 +63,7 @@ function Header() {
           >
             <FaSearch />
           </button>
-          <Link to="/" className="text-black hover:text-gray-600"><FaUser /></Link>
+          <Link to="/profile" className="text-black hover:text-gray-600"><FaUser /></Link>
           <Link to="/" className="text-black hover:text-gray-600 relative">
             <FaShoppingBag />
             {/* Optional Badge for Cart Count */}

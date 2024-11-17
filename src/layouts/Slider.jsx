@@ -31,7 +31,7 @@ function ImageSlider() {
             alt="Fashion & Show"
             className="w-full h-[650px]"
           />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-full border-4 border-orange-500 p-4">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-[20px] border-4 border-orange-500 p-4">
             <h1 className="text-4xl font-bold text-orange-500">Womens Fashion</h1>
             <p className="text-lg text-black">A World Fashion and Trendy Fashion Clothes</p>
             <button className="bg-orange-500 text-black py-2 px-4 border-2 transition duration-500 ease-in-out rounded-full hover:bg-white hover:text-black">
@@ -47,7 +47,7 @@ function ImageSlider() {
             alt="Fashion & Show"
             className="w-full h-[650px]"
           />
-          <div className="absolute top-1/2 left-[25%] transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-full border-4 border-orange-500 p-4">
+          <div className="absolute top-1/2 left-[25%] transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-[20px] border-4 border-orange-500 p-4">
             <h1 className="text-4xl font-bold text-orange-500">Mens Fashion</h1>
             <p className="text-lg text-black">A World Fashion and Trendy Fashion Clothes</p>
             <button className="bg-orange-500 text-black py-2 px-4 border-2 transition duration-500 ease-in-out rounded-full hover:bg-white hover:text-black">
@@ -63,7 +63,7 @@ function ImageSlider() {
             alt="Fashion & Show"
             className="w-full h-[650px]"
           />
-          <div className="absolute top-1/2 left-[25%] transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-full border-4 border-orange-500 p-4">
+          <div className="absolute top-1/2 left-[25%] transform -translate-x-1/2 -translate-y-1/2 text-center bg-azure rounded-[20px] border-4 border-orange-500 p-4">
             <h1 className="text-4xl font-bold text-orange-500">Kids Fashion</h1>
             <p className="text-lg text-black">A World Fashion and Trendy Fashion Clothes</p>
             <button className="bg-orange-500 text-black py-2 px-4 border-2 transition duration-500 ease-in-out rounded-full hover:bg-white hover:text-black">

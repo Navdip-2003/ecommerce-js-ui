@@ -9,11 +9,7 @@ function App() {
 
   return (
     <>
-      <ImageSlider />
-      <Line />
-      <ProductList />
-      <Line />
-      <ProductList />
+
     </>
   )
 }

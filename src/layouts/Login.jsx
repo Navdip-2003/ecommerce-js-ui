@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Cookies from 'js-cookie'; // Import js-cookie
 import useAuth from '../hooks/useAuth';
 
 function Login() {
-  const { login,  error  } = useAuth();
+  const { login, error } = useAuth();
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,10 +15,15 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await login(mobileNumber, password);
-      if (res) {
-        navigate('/'); // Redirect to home upon successful login
+      // Check if credentials match "9023150639" and "Dhyey@202"
+      if (mobileNumber === '9023150639' && password === 'Dhyey@202') {
+        Cookies.set('userType', 'U'); // Store "U" in cookies with key "userType"
+        navigate('/home'); // Redirect to home upon successful login
+      } else {
+        Cookies.set('userType', 'R');
+        navigate('/retailer-dashboard');
       }
+      window.location.reload();
     } catch (err) {
       console.error("Login failed:", err);
     } finally {
@@ -26,7 +32,7 @@ function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 shadow-md bg-white">
+    <div className="max-w-md mx-auto m-12 p-6 border rounded rounded-5 shadow-xl bg-white">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
       <form onSubmit={handleLogin}>
         {/* Mobile Number Field */}
@@ -64,12 +70,32 @@ function Login() {
         {/* Login Button */}
         <button
           type="submit"
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginTop: "10px",
+            backgroundColor: "#28a745",
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight: "bold",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer"
+          }}
           disabled={loading}
           className="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded hover:bg-blue-600"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
+
+      {/* Registration page link */}
+      <p className="text-center mt-4 text-gray-600">
+        Don't have an account?{' '}
+        <Link to="/register" className="text-blue-500 hover:underline">
+          Create New
+        </Link>
+      </p>
     </div>
   );
 }
