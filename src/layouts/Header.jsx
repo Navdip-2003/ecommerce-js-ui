@@ -23,10 +23,19 @@ function Header() {
           </div>
         </div>
         <div className="text-md text-center mx-auto">Worldwide Express Shipping</div>
-        <div className="flex space-x-6">
-          <Link to="/login" className="text-gray-200 hover:text-gray-400 text-md font-bold">LOGIN</Link>
-          <Link to="/register" className="text-gray-200 hover:text-gray-400 text-md font-bold">REGISTER</Link>
-        </div>
+        {user ? (
+          <>
+            <button onClick={logout} className="text-gray-200 hover:text-gray-400 text-md font-bold">LOGOUT</button>
+          </>
+        ) : (
+          <>
+            {/* Login and Register Links */}
+            <div className="flex space-x-6">
+              <Link to="/login" className="text-gray-200 hover:text-gray-400 text-md font-bold">LOGIN</Link>
+              <Link to="/register" className="text-gray-200 hover:text-gray-400 text-md font-bold">REGISTER</Link>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Header */}

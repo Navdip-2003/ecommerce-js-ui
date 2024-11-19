@@ -15,15 +15,10 @@ function Login() {
     setLoading(true);
 
     try {
-      // Check if credentials match "9023150639" and "Dhyey@202"
-      if (mobileNumber === '9023150639' && password === 'Dhyey@202') {
-        Cookies.set('userType', 'U'); // Store "U" in cookies with key "userType"
-        navigate('/home'); // Redirect to home upon successful login
-      } else {
-        Cookies.set('userType', 'R');
-        navigate('/retailer-dashboard');
+      const res = await login(mobileNumber, password);
+      if (res) {
+        navigate('/'); // Redirect to home upon successful login
       }
-      window.location.reload();
     } catch (err) {
       console.error("Login failed:", err);
     } finally {

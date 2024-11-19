@@ -38,7 +38,7 @@ function RetailerProductList() {
         {
             productId: "k5d4cv1",
             name: "Jeans",
-            description: "100% Cotton, Slim Fit Jeans",
+            description: "100% Cotton, Regular Fit Jeans",
             category: { type: "Jeans", size: ["S", "M", "L", "XL"], color: ["Blue", "Black", "Red"], gender: "Womens", fit: "Regular Fit" },
             price: "₹1599",
             discountPrice: "₹999",
