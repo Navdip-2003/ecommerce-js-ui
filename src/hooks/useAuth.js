@@ -7,8 +7,7 @@ const setToken = (token) => localStorage.setItem('token', token);
 const clearToken = () => localStorage.removeItem('token');
 
 // Base API URL from environment variable
-const API_URL = "https://ecommerce-js-backend-production.up.railway.app"||" http://localhost:8080";
-
+const API_URL = import.meta.env.REACT_APP_API_BASE_URL || "http://localhost:8080"; // Fallback to localhost if the env var is not set
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
