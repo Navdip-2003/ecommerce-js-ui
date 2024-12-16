@@ -16,8 +16,23 @@ function Login() {
 
     try {
       const res = await login(mobileNumber, password);
+      let userData = null;
+      try {
+        const userDataCookie = Cookies.get('userData'); // Fetch from cookie
+        if (userDataCookie) {
+          userData = JSON.parse(userDataCookie); // Parse JSON string
+        }
+      } catch (error) {
+        console.error("Failed to parse userData from cookie:", error);
+      }
+      const userType = userData?.type;
+
       if (res) {
-        navigate('/'); // Redirect to home upon successful login
+        if (userType === 'U') {
+          navigate('/home'); 
+        } else if (userType === 'R') {
+          navigate('/retailer/dashboard');
+        }
       }
     } catch (err) {
       console.error("Login failed:", err);

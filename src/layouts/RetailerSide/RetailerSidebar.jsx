@@ -9,11 +9,11 @@ const RetailerSidebar = () => {
         <div style={styles.sidebar}>
           <h2 style={styles.title}>Retailers Dashboard</h2>
           <nav style={styles.nav}>
-            <Link to="/retailer-dashboard" style={styles.link}>Dashboard</Link>
-            <Link to="/retailer-order" style={styles.link}>Orders</Link>
-            <Link to="/retailer-add-product" style={styles.link}>Add Products</Link>
-            <Link to="/retailer-product-list" style={styles.link}>Products List</Link>
-            <Link to="/retailer-contact" style={styles.link}>Contact</Link>
+            <Link to="/retailer/dashboard" style={styles.link}>Dashboard</Link>
+            <Link to="/retailer/order" style={styles.link}>Orders</Link>
+            <Link to="/retailer/add-product" style={styles.link}>Add Products</Link>
+            <Link to="/retailer/product-list" style={styles.link}>Products List</Link>
+            <Link to="/retailer/contact" style={styles.link}>Contact</Link>
           </nav>
         </div>
 

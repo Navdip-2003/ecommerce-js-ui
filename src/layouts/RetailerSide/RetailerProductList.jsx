@@ -108,7 +108,7 @@ function RetailerProductList() {
                                 <td style={styles.td}>
                                     <button
                                         style={styles.button}
-                                        onClick={() => navigate(`/retailer-product-details/${product.productId}`, { state: { product } })}
+                                        onClick={() => navigate(`/retailer/product-details/${product.productId}`, { state: { product } })}
                                     >
                                         <FaEye />
                                     </button>

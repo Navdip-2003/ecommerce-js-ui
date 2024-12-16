@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Utility functions for token management
 const getToken = () => localStorage.getItem('token');
@@ -33,7 +34,8 @@ const useAuth = () => {
       });
       
       setUser(response.data.data);  // Assuming `data` contains user info
-
+      const userData = response.data.data;
+      Cookies.set('userData', JSON.stringify(userData));
       console.log(token)
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch user data');
@@ -70,6 +72,7 @@ const useAuth = () => {
   const logout = () => {
     clearToken();
     setUser(null);
+    Cookies.remove('userData'); 
     console.log('User logged out');
   };
 

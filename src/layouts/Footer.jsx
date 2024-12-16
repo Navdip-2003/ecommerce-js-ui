@@ -11,11 +11,11 @@ const Footer = () => {
         <div className="w-full md:w-1/4 px-5">
           <h4 className="font-bold mb-4">Quick Shop</h4>
           <ul>
-            <li className="mb-2"><Link to="/women" className="hover:text-gray-500">Women</Link></li>
-            <li className="mb-2"><Link to="/men" className="hover:text-gray-500">Men</Link></li>
-            <li className="mb-2"><Link to="/kids" className="hover:text-gray-500">Kids</Link></li>
-            <li className="mb-2"><Link to="/sportswear" className="hover:text-gray-500">Sportswear</Link></li>
-            <li><Link to="/sale" className="hover:text-gray-500">Sale</Link></li>
+            <li className="mb-2"><Link to="/shop" className="hover:text-gray-500">Women</Link></li>
+            <li className="mb-2"><Link to="/shop" className="hover:text-gray-500">Men</Link></li>
+            <li className="mb-2"><Link to="/shop" className="hover:text-gray-500">Kids</Link></li>
+            <li className="mb-2"><Link to="/shop" className="hover:text-gray-500">Sportswear</Link></li>
+            <li><Link to="/shop" className="hover:text-gray-500">Sale</Link></li>
           </ul>
         </div>
 

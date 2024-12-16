@@ -9,7 +9,7 @@ function OrderDetailsPage() {
     const [updatedStatus, setUpdatedStatus] = useState(order.status);
 
     const handleCloseModal = () => {
-        navigate("/retailer-order");
+        navigate("/retailer/order");
     };
 
     const handleStatusChange = (e) => {

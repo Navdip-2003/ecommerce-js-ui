@@ -11,7 +11,7 @@ function RetailerProductDetail() {
     const [newImages, setNewImages] = useState([]);
 
     const handleCloseModal = () => {
-        navigate("/retailer-product-list");
+        navigate("/retailer/product-list");
     };
 
     const handleInputChange = (e) => {

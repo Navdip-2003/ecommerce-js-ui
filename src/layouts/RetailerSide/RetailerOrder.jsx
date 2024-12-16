@@ -61,7 +61,7 @@ function RetailerOrder() {
     const [orders] = useState(ordersData);
 
     const handleEditClick = (order) => {
-        navigate(`/retailer-order-details/${order.orderId}`, { state: { order } });
+        navigate(`/retailer/order-details/${order.orderId}`, { state: { order } });
     };
 
     return (
