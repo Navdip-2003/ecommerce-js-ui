@@ -20,6 +20,11 @@ import RetailerContact from './layouts/RetailerSide/RetailerContact.jsx';
 import RetailerProfile from './layouts/RetailerSide/RetailerProfile.jsx';
 import OrderDetailsPage from './layouts/RetailerSide/RetailerOrderDetails.jsx';
 import RetailerProductDetail from './layouts/RetailerSide/RetailerProductDetails.jsx';
+import PastOrders from './layouts/Order.jsx';
+import ShopPage from './layouts/Shop.jsx';
+import ProductDetails from './layouts/Product/ProductDetails.jsx';
+import CartPage from './layouts/Cart.jsx';
+import CheckoutPage from './layouts/CheckoutPage.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -38,11 +43,17 @@ const router = createBrowserRouter(
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsAndConditions />} />
+        <Route path="/orders" element={<PastOrders />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/product-detail/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Route>
 
       {/* Retailer Routes */}
       <Route path="/retailer" element={<MainLayout />}>
         <Route index element={<RetailerDashboard />} />
+        <Route path="dashboard" element={<RetailerDashboard />} />
         <Route path="retailer-register" element={<RetailerRegister />} />
         <Route path="order" element={<RetailerOrder />} />
         <Route path="order-details/:id" element={<OrderDetailsPage />} />

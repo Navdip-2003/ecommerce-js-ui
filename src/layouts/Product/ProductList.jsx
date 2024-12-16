@@ -13,62 +13,94 @@ function ProductList() {
 
   // Dummy product data
   const products = [
-    {
-      name: 'Edna Dress',
-      imageUrl: product1,
-      discountPrice: 600,
-      actualPrice: 500,
-      colors: ['#FF0000', '#00FFFF', '#0000FF']
-    },
-    {
-      name: 'Elastic Waist Dress',
-      imageUrl: product2,
-      discountPrice: 748,
-      actualPrice: 748,
-      colors: ['#000000', '#7F00FF', '#DAA520']
-    },
-    {
-      name: '3/4 Sleeve Kimono Dress',
-      imageUrl: product3,
-      discountPrice: 550,
-      actualPrice: 550,
-      colors: ['#FF4500', '#FFD700', '#C0C0C0']
-    },
-    {
-      name: 'Cape Dress',
-      imageUrl: product1,
-      discountPrice: 788,
-      actualPrice: 900,
-      colors: ['#191970', '#8B0000', '#006400']
-    },
-    {
-      name: 'Edna Dress',
-      imageUrl: product1,
-      discountPrice: 600,
-      actualPrice: 500,
-      colors: ['#FF0000', '#00FFFF', '#0000FF']
-    },
-    {
-      name: 'Elastic Waist Dress',
-      imageUrl: product2,
-      discountPrice: 748,
-      actualPrice: 748,
-      colors: ['#000000', '#7F00FF', '#DAA520']
-    },
-    {
-      name: '3/4 Sleeve Kimono Dress',
-      imageUrl: product3,
-      discountPrice: 550,
-      actualPrice: 550,
-      colors: ['#FF4500', '#FFD700', '#C0C0C0']
-    },
-    {
-      name: 'Cape Dress',
-      imageUrl: product1,
-      discountPrice: 788,
-      actualPrice: 900,
-      colors: ['#191970', '#8B0000', '#006400']
-    },
+{
+    id: 1,
+    name: 'Edna Dress',
+    imageUrl: product1,
+    discountPrice: 600,
+    actualPrice: 500,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#FF0000', '#00FFFF', '#0000FF'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 2,
+    name: 'Elastic Waist Dress',
+    imageUrl: product2,
+    discountPrice: 748,
+    actualPrice: 948,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#000000', '#7F00FF', '#DAA520'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 3,
+    name: '3/4 Sleeve Kimono Dress',
+    imageUrl: product3,
+    discountPrice: 550,
+    actualPrice: 750,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#FF4500', '#FFD700', '#C0C0C0'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 4,
+    name: 'Cape Dress',
+    imageUrl: product1,
+    discountPrice: 788,
+    actualPrice: 900,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#191970', '#8B0000', '#006400'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 5,
+    name: 'Edna Dress',
+    imageUrl: product1,
+    discountPrice: 600,
+    actualPrice: 500,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#FF0000', '#00FFFF', '#0000FF'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 6,
+    name: 'Elastic Waist Dress',
+    imageUrl: product2,
+    discountPrice: 748,
+    actualPrice: 748,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#000000', '#7F00FF', '#DAA520'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 7,
+    name: '3/4 Sleeve Kimono Dress',
+    imageUrl: product3,
+    discountPrice: 550,
+    actualPrice: 550,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#FF4500', '#FFD700', '#C0C0C0'],
+    size: ['xs','s','m','x','xl','xll']
+  },
+  {
+    id: 8,
+    name: 'Cape Dress',
+    imageUrl: product1,
+    discountPrice: 788,
+    actualPrice: 900,
+    description:
+      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+    colors: ['#191970', '#8B0000', '#006400'],
+    size: ['xs','s','m','x','xl','xll']
+  },
     // Add more products as needed
   ];
 

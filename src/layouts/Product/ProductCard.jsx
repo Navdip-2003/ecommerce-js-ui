@@ -1,10 +1,21 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faMagnifyingGlassPlus, faHeart, faArrowsAltH } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlassPlus, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 function ProductCard({ product }) {
+  const navigate = useNavigate();
+
+  // Handler to navigate to the product details page
+  const handleCardClick = () => {
+    navigate(`/product-detail/${product.id}`);
+  };
+
   return (
-    <div className="relative w-64 h-auto flex-shrink-0 p-4 flex flex-col items-center border rounded-lg shadow-lg m-2 transition-transform duration-300 hover:scale-105 group">
+    <div
+      onClick={handleCardClick}
+      className="relative w-64 h-auto flex-shrink-0 p-4 flex flex-col items-center border rounded-lg shadow-lg m-2 transition-transform duration-300 hover:scale-105 group cursor-pointer"
+    >
       {/* Product Image with Overlay Buttons */}
       <div className="relative w-full h-64 mb-2">
         <img

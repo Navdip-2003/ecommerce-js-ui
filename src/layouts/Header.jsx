@@ -6,7 +6,12 @@ import useAuth from '../hooks/useAuth';
 function Header() {
   const { user, logout } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const toggleProfileDropdown = () => {
+    setShowProfileDropdown((prev) => !prev);
+  };
 
   return (
     <header className="font-sans m-0">
@@ -24,17 +29,27 @@ function Header() {
         </div>
         <div className="text-md text-center mx-auto">Worldwide Express Shipping</div>
         {user ? (
-          <>
-            <button onClick={logout} className="text-gray-200 hover:text-gray-400 text-md font-bold">LOGOUT</button>
-          </>
+          <button
+            onClick={logout}
+            className="text-gray-200 hover:text-gray-400 text-md font-bold"
+          >
+            LOGOUT
+          </button>
         ) : (
-          <>
-            {/* Login and Register Links */}
-            <div className="flex space-x-6">
-              <Link to="/login" className="text-gray-200 hover:text-gray-400 text-md font-bold">LOGIN</Link>
-              <Link to="/register" className="text-gray-200 hover:text-gray-400 text-md font-bold">REGISTER</Link>
-            </div>
-          </>
+          <div className="flex space-x-6">
+            <Link
+              to="/login"
+              className="text-gray-200 hover:text-gray-400 text-md font-bold"
+            >
+              LOGIN
+            </Link>
+            <Link
+              to="/register"
+              className="text-gray-200 hover:text-gray-400 text-md font-bold"
+            >
+              REGISTER
+            </Link>
+          </div>
         )}
       </div>
 
@@ -42,41 +57,81 @@ function Header() {
       <div className="flex justify-between items-center p-1 bg-white border-b border-gray-300">
         {/* Logo */}
         <div className="pl-16">
-          <img src="\src\assets\images\logo-1.png" className="w-24 h-16" alt="Shivay" />
+          <img
+            src="\src\assets\images\logo-1.png"
+            className="w-24 h-16"
+            alt="Shivay"
+          />
         </div>
 
         {/* Navigation */}
         <nav className="flex space-x-8 text-lg font-semibold">
-          <Link to="/home" className="text-black hover:text-gray-600 font-bold">HOME</Link>
-          <Link to="/retailer-dashboard" className="text-black hover:text-gray-600 font-bold">SHOP</Link>
-          <Link to="/about-us" className="text-black hover:text-gray-600 font-bold">ABOUT US</Link>
-          <Link to="/contact" className="text-black hover:text-gray-600 font-bold">CONTACT</Link>
+          <Link
+            to="/home"
+            className="text-black hover:text-gray-600 font-bold"
+          >
+            HOME
+          </Link>
+          <Link
+            to="/shop"
+            className="text-black hover:text-gray-600 font-bold"
+          >
+            SHOP
+          </Link>
+          <Link
+            to="/about-us"
+            className="text-black hover:text-gray-600 font-bold"
+          >
+            ABOUT US
+          </Link>
+          <Link
+            to="/contact"
+            className="text-black hover:text-gray-600 font-bold"
+          >
+            CONTACT
+          </Link>
         </nav>
 
         {/* User Options */}
-        <div className="flex items-center space-x-6 pr-10">
-          {/* Search Input Toggle */}
-          {showSearch && (
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className=" px-5 py-1 bg-azure rounded-full border-2 border-orange-500"
-              placeholder="Search..."
-              style={{ width: '300px', borderRadius: '50px' }}
-            />
-          )}
+        <div className="flex items-center space-x-6 pr-10 relative">
+          {/* Profile Button with Dropdown */}
+
           <button
             className="text-black hover:text-gray-600"
-            onClick={() => setShowSearch(!showSearch)}
+            onClick={toggleProfileDropdown}
           >
-            <FaSearch />
+            <FaUser />
           </button>
-          <Link to="/profile" className="text-black hover:text-gray-600"><FaUser /></Link>
-          <Link to="/" className="text-black hover:text-gray-600 relative">
+          {showProfileDropdown && (
+            <div
+              className="absolute top-full right-0 mt-2 bg-white border border-gray-300 shadow-lg rounded w-40"
+              style={{ zIndex: 50 }} // Ensures dropdown appears above other elements
+            >
+              <Link
+                to="/profile"
+                className="block px-4 py-2 hover:bg-gray-200"
+              >
+                My Profile
+              </Link>
+              <Link
+                to="/orders"
+                className="block px-4 py-2 hover:bg-gray-200"
+              >
+                My Order
+              </Link>
+            </div>
+          )}
+
+
+
+          <Link
+            to="/cart"
+            className="text-black hover:text-gray-600 relative"
+          >
             <FaShoppingBag />
-            {/* Optional Badge for Cart Count */}
-            <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full px-1 transform translate-x-1/2 -translate-y-1/2">3</span>
+            <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full px-1 transform translate-x-1/2 -translate-y-1/2">
+              3
+            </span>
           </Link>
         </div>
       </div>

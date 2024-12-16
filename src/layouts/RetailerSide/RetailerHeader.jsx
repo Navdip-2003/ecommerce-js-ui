@@ -23,7 +23,7 @@ function RetailerHeader() {
 
         {/* User Options */}
         <div className="flex items-center space-x-6 pr-10">
-          <Link to="/retailer-profile" className="text-black hover:text-gray-600"><FaUser /></Link>
+          <Link to="/retailer/profile" className="text-black hover:text-gray-600"><FaUser /></Link>
           <button
             onClick={handleLogout} // Attach the logout handler
             className="text-black hover:text-gray-600"

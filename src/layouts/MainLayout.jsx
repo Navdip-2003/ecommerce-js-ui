@@ -7,11 +7,20 @@ import RetailerHeader from './RetailerSide/RetailerHeader';
 import RetailerSidebar from './RetailerSide/RetailerSidebar';
 import RetailerFooter from './RetailerSide/RetailerFooter';
 
-function MainLayout() { 
-  // Get the 'type' from cookies
-  const type = Cookies.get('userType');
+function MainLayout() {
+  // Retrieve and parse 'userData' from cookies
+  let userData = null;
+  try {
+    const userDataCookie = Cookies.get('userData'); // Fetch from cookie
+    if (userDataCookie) {
+      userData = JSON.parse(userDataCookie); // Parse JSON string
+    }
+  } catch (error) {
+    console.error("Failed to parse userData from cookie:", error);
+  }
+  const userType = userData?.type; // Safely access user type
 
-  if (type === 'U') {
+  if (userType === 'U') {
     return (    
       <div>
         <Header />
@@ -19,7 +28,7 @@ function MainLayout() {
         <Footer />
       </div>
     );
-  } else if (type === 'R') {
+  } else if (userType === 'R') {
     return ( 
       <div>
         <RetailerHeader />
