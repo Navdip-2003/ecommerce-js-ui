@@ -25,6 +25,7 @@ import ShopPage from './layouts/Shop.jsx';
 import ProductDetails from './layouts/Product/ProductDetails.jsx';
 import CartPage from './layouts/Cart.jsx';
 import CheckoutPage from './layouts/CheckoutPage.jsx';
+import NotFound from './layouts/Common/NotFound.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,7 +37,6 @@ const router = createBrowserRouter(
       {/* MainLayout routes */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
-        
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/about-us" element={<AboutUs />} />
@@ -48,6 +48,7 @@ const router = createBrowserRouter(
         <Route path="/product-detail/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       {/* Retailer Routes */}
@@ -62,7 +63,11 @@ const router = createBrowserRouter(
         <Route path="product-details/:id" element={<RetailerProductDetail />} />
         <Route path="contact" element={<RetailerContact />} />
         <Route path="profile" element={<RetailerProfile />} />
+        <Route path="*" element={<NotFound />} />
+
       </Route>
+
+      
 
       {/* Admin Routes
       // <Route path="/admin" element={<AdminLayout />}>

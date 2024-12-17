@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { FaPhoneAlt, FaSearch, FaShoppingBag, FaHeart, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
+import { FaPhoneAlt, FaShoppingBag, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 function Header() {
   const { user, logout } = useAuth();
-  const [showSearch, setShowSearch] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleProfileDropdown = () => {
     setShowProfileDropdown((prev) => !prev);
@@ -66,74 +64,53 @@ function Header() {
 
         {/* Navigation */}
         <nav className="flex space-x-8 text-lg font-semibold">
-          <Link
-            to="/home"
-            className="text-black hover:text-gray-600 font-bold"
-          >
+          <Link to="/home" className="text-black hover:text-gray-600 font-bold">
             HOME
           </Link>
-          <Link
-            to="/shop"
-            className="text-black hover:text-gray-600 font-bold"
-          >
+          <Link to="/shop" className="text-black hover:text-gray-600 font-bold">
             SHOP
           </Link>
-          <Link
-            to="/about-us"
-            className="text-black hover:text-gray-600 font-bold"
-          >
+          <Link to="/about-us" className="text-black hover:text-gray-600 font-bold">
             ABOUT US
           </Link>
-          <Link
-            to="/contact"
-            className="text-black hover:text-gray-600 font-bold"
-          >
+          <Link to="/contact" className="text-black hover:text-gray-600 font-bold">
             CONTACT
           </Link>
         </nav>
 
         {/* User Options */}
-        <div className="flex items-center space-x-6 pr-10 relative">
-          {/* Profile Button with Dropdown */}
-
-          <button
-            className="text-black hover:text-gray-600"
-            onClick={toggleProfileDropdown}
-          >
-            <FaUser />
-          </button>
-          {showProfileDropdown && (
-            <div
-              className="absolute top-full right-0 mt-2 bg-white border border-gray-300 shadow-lg rounded w-40"
-              style={{ zIndex: 50 }} // Ensures dropdown appears above other elements
+        {user && (
+          <div className="flex items-center space-x-6 pr-10 relative">
+            {/* Profile Button with Dropdown */}
+            <button
+              className="text-black hover:text-gray-600"
+              onClick={toggleProfileDropdown}
             >
-              <Link
-                to="/profile"
-                className="block px-4 py-2 hover:bg-gray-200"
+              <FaUser />
+            </button>
+            {showProfileDropdown && (
+              <div
+                className="absolute top-full right-0 mt-2 bg-white border border-gray-300 shadow-lg rounded w-40"
+                style={{ zIndex: 50 }}
               >
-                My Profile
-              </Link>
-              <Link
-                to="/orders"
-                className="block px-4 py-2 hover:bg-gray-200"
-              >
-                My Order
-              </Link>
-            </div>
-          )}
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">
+                  My Profile
+                </Link>
+                <Link to="/orders" className="block px-4 py-2 hover:bg-gray-200">
+                  My Order
+                </Link>
+              </div>
+            )}
 
-
-
-          <Link
-            to="/cart"
-            className="text-black hover:text-gray-600 relative"
-          >
-            <FaShoppingBag />
-            <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full px-1 transform translate-x-1/2 -translate-y-1/2">
-              3
-            </span>
-          </Link>
-        </div>
+            {/* Cart Icon */}
+            <Link to="/cart" className="text-black hover:text-gray-600 relative">
+              <FaShoppingBag />
+              <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full px-1 transform translate-x-1/2 -translate-y-1/2">
+                3
+              </span>
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );

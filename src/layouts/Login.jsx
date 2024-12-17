@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie'; // Import js-cookie
 import useAuth from '../hooks/useAuth';
+import { FaSpinner } from 'react-icons/fa'; // Import spinner icon
 
 function Login() {
   const { login, error } = useAuth();
@@ -42,7 +43,7 @@ function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto m-12 p-6 border rounded rounded-5 shadow-xl bg-white">
+    <div className="max-w-md mx-auto m-12 p-6 border rounded shadow-xl bg-white">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
       <form onSubmit={handleLogin}>
         {/* Mobile Number Field */}
@@ -77,25 +78,35 @@ function Login() {
         {/* Error Message */}
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-        {/* Login Button */}
+        {/* Login Button with Loading Spinner */}
         <button
           type="submit"
           style={{
             width: "100%",
             padding: "10px",
             marginTop: "10px",
-            backgroundColor: "#28a745",
+            backgroundColor: loading ? "#ccc" : "#28a745", // Grey when loading
             color: "#fff",
             fontSize: "16px",
             fontWeight: "bold",
             borderRadius: "5px",
             border: "none",
-            cursor: "pointer"
+            cursor: loading ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
           disabled={loading}
-          className="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded hover:bg-blue-600"
+          className="w-full py-2 px-4 text-white font-bold rounded hover:bg-blue-600"
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? (
+            <span className="flex items-center space-x-2">
+              <FaSpinner className="animate-spin" /> 
+              <span>Logging in...</span>
+            </span>
+          ) : (
+            'Login'
+          )}
         </button>
       </form>
 
