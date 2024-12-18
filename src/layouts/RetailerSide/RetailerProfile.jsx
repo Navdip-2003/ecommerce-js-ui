@@ -1,52 +1,89 @@
 import React, { useState } from 'react';
+import Cookies from 'js-cookie';
 import defaultProfile from '../../assets/images/profile-user.png';
 
 function RetailerProfile() {
     const [isEditing, setIsEditing] = useState(false); // State to toggle between view and edit modes
     const [profile, setProfile] = useState({
         shopLogo: defaultProfile, // Placeholder image for shop logo
-        storeName: "GD Store",
-        retailerName: "Dhyey Gorasiya",
-        address: "A-202 Omkar residency, surat.",
-        email: "dhyeygorasiya@gmail.com",
-        phone: "9023150639",
     });
-    
-    const [newProfileImage, setNewProfileImage] = useState(null); // State to hold the new profile image
 
-    const handleProfileChange = (e) => {
+    const [errorMessage, setErrorMessage] = useState(''); // For displaying validation errors
+    const [newProfileImage, setNewProfileImage] = useState(null);
+
+    let userData = null;
+    try {
+        const userDataCookie = Cookies.get('userData'); // Fetch from cookie
+        if (userDataCookie) {
+            userData = JSON.parse(userDataCookie); // Parse JSON string
+        }
+    } catch (error) {
+        console.error("Failed to parse userData from cookie:", error);
+    }
+
+    // Extract first address or fallback to an empty object
+    const firstAddress = (userData?.address && userData.address[0]) || {
+        type: '',
+        street: '',
+        city: '',
+        state: '',
+        pinCode: '',
+    };
+
+    const [formData, setFormData] = useState({
+        storeName: userData?.storeName || '',
+        retailerName: userData?.firstName || '',
+        email: userData?.email || '',
+        phone: userData?.mobileNumber || '',
+        address: { ...firstAddress }, // Initialize with the first address
+    });
+
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setProfile((prevState) => ({
+        setFormData((prevState) => ({
             ...prevState,
             [name]: value,
+        }));
+    };
+
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({
+            ...prevState,
+            address: {
+                ...prevState.address,
+                [name]: value,
+            },
         }));
     };
 
     const handleProfileImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Validate image format (only jpg or png)
-            const fileType = file.type.split("/")[1];
-            if (fileType === "jpeg" || fileType === "png") {
-                // Validate image size (less than 2MB)
+            const fileType = file.type.split('/')[1];
+            if (fileType === 'jpeg' || fileType === 'png') {
                 if (file.size <= 2 * 1024 * 1024) {
-                    // Create a URL for the selected image
-                    setNewProfileImage(URL.createObjectURL(file));
+                    setNewProfileImage(URL.createObjectURL(file)); // Set preview image
+                    setErrorMessage(''); // Clear error message
                 } else {
-                    alert("Image size must be less than 2MB.");
+                    setErrorMessage('Image size must be less than 2MB.');
                 }
             } else {
-                alert("Only JPG and PNG formats are allowed.");
+                setErrorMessage('Only JPG and PNG formats are allowed.');
             }
         }
     };
 
     const handleUpdateProfile = (e) => {
         e.preventDefault();
-        // If a new profile image is selected, update the profile image
-        const updatedProfile = { ...profile, shopLogo: newProfileImage || profile.shopLogo };
-        setProfile(updatedProfile);
-        setIsEditing(false);
+        if (!errorMessage) {
+            const updatedProfile = {
+                ...profile,
+                shopLogo: newProfileImage || profile.shopLogo,
+            };
+            setProfile(updatedProfile);
+            setIsEditing(false);
+        }
     };
 
     return (
@@ -68,14 +105,19 @@ function RetailerProfile() {
 
                         <div style={styles.detailsContainer}>
                             <div style={styles.profileInfo}>
-                                <div style={styles.profileField}><strong>Store Name : </strong> {profile.storeName}</div>
-                                <div style={styles.profileField}><strong>Retailer Name : </strong> {profile.retailerName}</div>
-                                <div style={styles.profileField}><strong>Address : </strong> {profile.address}</div>
-                                <div style={styles.profileField}><strong>Email : </strong> {profile.email}</div>
-                                <div style={styles.profileField}><strong>Phone No : </strong> {profile.phone}</div>
+                                <div style={styles.profileField}><strong>Store Name: </strong>{userData?.storeName || 'N/A'}</div>
+                                <div style={styles.profileField}><strong>Retailer Name: </strong>{userData?.firstName}</div>
+                                <div style={styles.profileField}>
+                                    <strong>Address: </strong>
+                                    {`${firstAddress.street}, ${firstAddress.city}, ${firstAddress.state} - ${firstAddress.pinCode}`}
+                                </div>
+                                <div style={styles.profileField}><strong>Email: </strong>{userData?.email}</div>
+                                <div style={styles.profileField}><strong>Phone No: </strong>{userData?.mobileNumber}</div>
                             </div>
 
-                            <button onClick={() => setIsEditing(true)} style={styles.button}>Update Profile</button>
+                            <button onClick={() => setIsEditing(true)} style={styles.button}>
+                                Update Profile
+                            </button>
                         </div>
                     </>
                 ) : (
@@ -94,6 +136,9 @@ function RetailerProfile() {
                                     onChange={handleProfileImageChange}
                                     style={styles.fileInput}
                                 />
+                                {errorMessage && (
+                                    <p style={styles.errorText}>{errorMessage}</p>
+                                )}
                             </div>
 
                             <div style={styles.profileField}>
@@ -101,8 +146,8 @@ function RetailerProfile() {
                                 <input
                                     type="text"
                                     name="storeName"
-                                    value={profile.storeName}
-                                    onChange={handleProfileChange}
+                                    value={formData.storeName}
+                                    onChange={handleInputChange}
                                     style={styles.inputField}
                                 />
                             </div>
@@ -112,19 +157,53 @@ function RetailerProfile() {
                                 <input
                                     type="text"
                                     name="retailerName"
-                                    value={profile.retailerName}
-                                    onChange={handleProfileChange}
+                                    value={formData.retailerName}
+                                    onChange={handleInputChange}
                                     style={styles.inputField}
                                 />
                             </div>
 
                             <div style={styles.profileField}>
-                                <label>Address:</label>
-                                <textarea
-                                    name="address"
-                                    value={profile.address}
-                                    onChange={handleProfileChange}
-                                    style={{ ...styles.inputField, height: '80px' }}
+                                <label>Street:</label>
+                                <input
+                                    type="text"
+                                    name="street"
+                                    value={formData.address.street}
+                                    onChange={handleAddressChange}
+                                    style={styles.inputField}
+                                />
+                            </div>
+
+                            <div style={styles.profileField}>
+                                <label>City:</label>
+                                <input
+                                    type="text"
+                                    name="city"
+                                    value={formData.address.city}
+                                    onChange={handleAddressChange}
+                                    style={styles.inputField}
+                                />
+                            </div>
+
+                            <div style={styles.profileField}>
+                                <label>State:</label>
+                                <input
+                                    type="text"
+                                    name="state"
+                                    value={formData.address.state}
+                                    onChange={handleAddressChange}
+                                    style={styles.inputField}
+                                />
+                            </div>
+
+                            <div style={styles.profileField}>
+                                <label>Pin Code:</label>
+                                <input
+                                    type="text"
+                                    name="pinCode"
+                                    value={formData.address.pinCode}
+                                    onChange={handleAddressChange}
+                                    style={styles.inputField}
                                 />
                             </div>
 
@@ -133,8 +212,8 @@ function RetailerProfile() {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={profile.email}
-                                    onChange={handleProfileChange}
+                                    value={formData.email}
+                                    onChange={handleInputChange}
                                     style={styles.inputField}
                                 />
                             </div>
@@ -144,8 +223,8 @@ function RetailerProfile() {
                                 <input
                                     type="text"
                                     name="phone"
-                                    value={profile.phone}
-                                    onChange={handleProfileChange}
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
                                     style={styles.inputField}
                                 />
                             </div>
@@ -166,7 +245,7 @@ function RetailerProfile() {
             </div>
         </div>
     );
-};
+}
 
 const styles = {
     container: {
@@ -178,7 +257,7 @@ const styles = {
         textAlign: "center",
         marginBottom: "30px",
         color: "#333",
-        fontSize: '25px',
+        fontSize: "25px",
     },
     profileContainer: {
         display: "flex",
@@ -187,9 +266,6 @@ const styles = {
     },
     logoContainer: {
         marginBottom: "20px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
     },
     shopLogo: {
         borderRadius: "50%",
@@ -199,8 +275,6 @@ const styles = {
     },
     fileInput: {
         marginTop: "10px",
-        padding: "8px",
-        fontSize: "14px",
     },
     detailsContainer: {
         width: "100%",
@@ -215,7 +289,12 @@ const styles = {
     },
     profileField: {
         marginBottom: "10px",
-        fontSize: "16px",
+    },
+    addressContainer: {
+        marginBottom: "15px",
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "5px",
     },
     inputField: {
         width: "100%",
@@ -239,6 +318,11 @@ const styles = {
         cursor: "pointer",
         fontSize: "16px",
         fontWeight: "bold",
+    },
+    errorText: {
+        color: "red",
+        marginTop: "10px",
+        fontSize: "14px",
     },
 };
 

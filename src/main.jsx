@@ -26,6 +26,13 @@ import ProductDetails from './layouts/Product/ProductDetails.jsx';
 import CartPage from './layouts/Cart.jsx';
 import CheckoutPage from './layouts/CheckoutPage.jsx';
 import NotFound from './layouts/Common/NotFound.jsx';
+import AdminDashboard from './layouts/AdminSide/AdminHome.jsx';
+import AdminContacts from './layouts/AdminSide/AdminContacts.jsx';
+import AdminUsers from './layouts/AdminSide/AdminUsers.jsx';
+import AdminRetailers from './layouts/AdminSide/AdminRetailers.jsx';
+import AdminProducts from './layouts/AdminSide/AdminProducts.jsx';
+import AdminSettings from './layouts/AdminSide/AdminSettings.jsx';
+import AdminProfile from './layouts/AdminSide/AdminProfile.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -69,12 +76,17 @@ const router = createBrowserRouter(
 
       
 
-      {/* Admin Routes
-      // <Route path="/admin" element={<AdminLayout />}>
-      //   <Route path="dashboard" element={<AdminDashboard />} />
-      //   <Route path="users" element={<UserManagement />} />
-      //   <Route path="settings" element={<AdminSettings />} />
-      // </Route> */}
+      {/* Admin Routes */}
+      <Route path="/admin" element={<MainLayout />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="retailers" element={<AdminRetailers />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="contact" element={<AdminContacts />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="profile" element={<AdminProfile />} />
+      </Route> 
     </>
   )
 );

@@ -33,6 +33,8 @@ function Login() {
           navigate('/home'); 
         } else if (userType === 'R') {
           navigate('/retailer/dashboard');
+        } else if (userType === 'A') {
+          navigate('/admin/dashboard');
         }
       }
     } catch (err) {

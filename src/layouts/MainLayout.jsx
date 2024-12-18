@@ -6,6 +6,9 @@ import Footer from './Footer';
 import RetailerHeader from './RetailerSide/RetailerHeader';
 import RetailerSidebar from './RetailerSide/RetailerSidebar';
 import RetailerFooter from './RetailerSide/RetailerFooter';
+import AdminHeader from './AdminSide/AdminHeader';
+import AdminSidebar from './AdminSide/AdminSidebar';
+import AdminFooter from './AdminSide/AdminFooter';
 
 function MainLayout() {
   // Retrieve and parse 'userData' from cookies
@@ -34,6 +37,14 @@ function MainLayout() {
         <RetailerHeader />
         <RetailerSidebar />
         <RetailerFooter />
+      </div>
+    );
+  } else if (userType === 'A') {
+    return ( 
+      <div>
+        <AdminHeader />
+        <AdminSidebar />
+        <AdminFooter />
       </div>
     );
   } else {

@@ -3,7 +3,7 @@ import { FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
-function RetailerHeader() {
+function AdminHeader() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -24,7 +24,7 @@ function RetailerHeader() {
 
         {/* User Options */}
         <div className="flex items-center space-x-6 pr-10">
-          <Link to="/retailer/profile" className="text-black hover:text-gray-600"><FaUser /></Link>
+          <Link to="/admin/profile" className="text-black hover:text-gray-600"><FaUser /></Link>
           <button
             onClick={handleLogout} // Attach the logout handler
             className="text-black hover:text-gray-600"
@@ -37,4 +37,4 @@ function RetailerHeader() {
   );
 }
 
-export default RetailerHeader;
+export default AdminHeader;

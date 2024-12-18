@@ -63,7 +63,7 @@ function Header() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex space-x-8 text-lg font-semibold">
+        <nav className={`flex ${user ? 'justify-center' : 'justify-center'} space-x-10 text-lg font-semibold flex-1`}>
           <Link to="/home" className="text-black hover:text-gray-600 font-bold">
             HOME
           </Link>

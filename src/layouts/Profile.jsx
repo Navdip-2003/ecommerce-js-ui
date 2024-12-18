@@ -13,6 +13,16 @@ const UserProfile = () => {
         profilePhoto: defaultProfilePhoto,
     });
 
+    let userData = null;
+    try {
+        const userDataCookie = Cookies.get('userData'); // Fetch from cookie
+        if (userDataCookie) {
+            userData = JSON.parse(userDataCookie); // Parse JSON string
+        }
+    } catch (error) {
+        console.error("Failed to parse userData from cookie:", error);
+    }
+
     const [addressList, setAddressList] = useState([
         { houseNo: "D-64", society: "Greenwood Society", area: "Sola Bridge", city: "Ahmedabad", state: "Gujarat", pincode: "380061" },
     ]);
@@ -27,10 +37,10 @@ const UserProfile = () => {
     });
 
     const [editingAddressIndex, setEditingAddressIndex] = useState(null); // Track which address is being edited
-    const [errorMessage, setErrorMessage] = useState(""); 
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleProfileChange = (e) => {
-        setUser ({ ...user, [e.target.name]: e.target.value });
+        setUser({ ...user, [e.target.name]: e.target.value });
     };
 
     const handleProfilePhotoChange = (e) => {
@@ -51,7 +61,7 @@ const UserProfile = () => {
 
             const reader = new FileReader();
             reader.onload = () => {
-                setUser  ({ ...user, profilePhoto: reader.result });
+                setUser({ ...user, profilePhoto: reader.result });
                 setErrorMessage(""); // Clear error message on successful upload
             };
             reader.readAsDataURL(file);
@@ -109,12 +119,12 @@ const UserProfile = () => {
                 <div style={{ textAlign: "center", marginBottom: "20px" }}>
                     <img
                         src={user.profilePhoto}
-                        alt ="Profile"
+                        alt="Profile"
                         style={{ borderRadius: "50%", width: "200px", height: "200px", marginBottom: "20px", justifySelf: "center" }}
                     />
-                    <h3>Dhyey Gorasiya</h3>
-                    <p>dhyeygorasiya@gmail.com</p>
-                    <p>9023150639</p>
+                    <h3>{userData?.firstName} {userData?.lastName}</h3>
+                    <p>{userData?.email}</p>
+                    <p>{userData?.mobileNumber}</p>
                     <button
                         onClick={() => setIsEditingProfile(!isEditingProfile)}
                         style={{ padding: "8px 16px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "4px", marginTop: "20px", cursor: "pointer" }}
@@ -158,10 +168,10 @@ const UserProfile = () => {
                             />
                         </label>
                         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-                        <input type="text" name="firstName" value="Dhyey" onChange={handleProfileChange} placeholder="First Name" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
-                        <input type="text" name="lastName" value="Gorasiya" onChange={handleProfileChange} placeholder="Last Name" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
-                        <input type="email" name="email" value="dhyeygorasiya@gmail.com" onChange={handleProfileChange} placeholder="Email" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
-                        <input type="text" name="phone" value="9023150639" onChange={handleProfileChange} placeholder="Phone" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
+                        <input type="text" name="firstName" value={userData?.firstName} onChange={handleProfileChange} placeholder="First Name" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
+                        <input type="text" name="lastName" value={userData?.lastName} onChange={handleProfileChange} placeholder="Last Name" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
+                        <input type="email" name="email" value={userData?.email} onChange={handleProfileChange} placeholder="Email" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
+                        <input type="text" name="phone" value={userData?.mobileNumber} onChange={handleProfileChange} placeholder="Phone" style={{ padding: "10px", width: "100%", margin: "10px 0", borderRadius: "5px", border: "1px solid #ccc" }} />
                         <button
                             onClick={() => setIsEditingProfile(false)}
                             style={{ padding: "8px 16px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "4px", marginTop: "10px" }}
