@@ -13,52 +13,52 @@ function RetailerProductList() {
             productId: "u47d5f5",
             name: "Half Sliv T-Shirt",
             description: "100% Cotton, Slim Fit T-Shirt",
-            category: { type: "T-Shirt", size: ["S", "M", "L", "XL"], color: ["Blue", "Black", "Red"], gender: "Kids", fit: "Slim Fit" },
-            price: "₹599",
-            discountPrice: "₹399",
+            category: "men",
+            subcategories: "T-Shirt",
+            sizes: "M",
+            price: "599",
+            discountPrice: "399",
             stock: "56",
-            image: [
-                { url: [product2, product1] },
-            ],
+            image: product1,
             status: "Active",
         },
         {
             productId: "fd565s4",
             name: "Casual Shirt",
             description: "100% Cotton, Slim Fit Shirt",
-            category: { type: "Shirt", size: ["S", "M", "L", "XL"], color: ["Blue", "Black", "Red"], gender: "Mens", fit: "Slim Fit" },
-            price: "₹999",
-            discountPrice: "₹699",
+            category: "women",
+            subcategories: "Dress",
+            sizes: "S",
+            price: "999",
+            discountPrice: "699",
             stock: "49",
-            image: [
-                { url: [product2, product3] },
-            ],
+            image: product2,
             status: "Inactive",
         },
         {
             productId: "k5d4cv1",
             name: "Jeans",
             description: "100% Cotton, Regular Fit Jeans",
-            category: { type: "Jeans", size: ["S", "M", "L", "XL"], color: ["Blue", "Black", "Red"], gender: "Womens", fit: "Regular Fit" },
-            price: "₹1599",
-            discountPrice: "₹999",
+            category: "men",
+            subcategories: "Jeans",
+            sizes: "32",
+            price: "1599",
+            discountPrice: "999",
             stock: "66",
-            image: [
-                { url: [product3, product2] },
-            ],
+            image: product3,
             status: "Inactive",
         },
         {
             productId: "e3d5df3",
             name: "Jacket",
             description: "100% Cotton, Slim Fit Jacket",
-            category: { type: "Jacket", size: ["S", "M", "L", "XL"], color: ["Blue", "Black", "Red"], gender: "Mens", fit: "Slim Fit" },
-            price: "₹2599",
-            discountPrice: "₹1699",
+            category: "kids",
+            subcategories: "Shirt",
+            sizes: "2T",
+            price: "2599",
+            discountPrice: "1699",
             stock: "25",
-            image: [
-                { url: [product2, product1] },
-            ],
+            image: product1,
             status: "Active",
         },
     ];
@@ -88,8 +88,8 @@ function RetailerProductList() {
                                 <td style={styles.td}>{index + 1}</td>
                                 <td style={styles.td}>{product.productId}</td>
                                 <td style={styles.td}>{product.name}</td>
-                                <td style={styles.td}>{product.discountPrice}</td>
-                                <td style={styles.td}>{product.category.gender}</td>
+                                <td style={styles.td}>₹{product.discountPrice}</td>
+                                <td style={styles.td}>{product.category}</td>
                                 <td style={styles.td}>
                                     <span
                                         style={{
