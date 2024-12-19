@@ -150,7 +150,6 @@ const UserProfile = () => {
                                 borderRadius: "50%",
                                 backgroundColor: "#ddd",
                                 color: "#007BFF",
-                                display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 fontSize: "24px",

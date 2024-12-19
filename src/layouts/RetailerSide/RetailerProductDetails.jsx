@@ -6,9 +6,42 @@ function RetailerProductDetail() {
     const navigate = useNavigate();
     const { state } = useLocation();
     const [productDetails, setProductDetails] = useState(state.product);
-    const [newSize, setNewSize] = useState("");
-    const [newColor, setNewColor] = useState("");
-    const [newImages, setNewImages] = useState([]);
+    const [image, setImage] = useState(null);
+    const [productTitle, setProductTitle] = useState("");
+    const [price, setPrice] = useState("");
+    const [discountedPrice, setDiscountedPrice] = useState("");
+    const [quantity, setQuantity] = useState("");
+    const [description, setDescription] = useState("");
+    const [category, setCategory] = useState("");
+    const [subcategory, setSubcategory] = useState("");
+    const [size, setSize] = useState("");
+
+    const categoryData = {
+        men: {
+            subcategories: ["T-Shirt", "Shirt", "Jeans"],
+            sizes: {
+                "T-Shirt": ["S", "M", "L", "XL"],
+                Shirt: ["S", "M", "L", "XL"],
+                Jeans: ["28", "30", "32", "34", "36"],
+            },
+        },
+        women: {
+            subcategories: ["Dress", "Blouse", "Skirt"],
+            sizes: {
+                Dress: ["XS", "S", "M", "L", "XL"],
+                Blouse: ["XS", "S", "M", "L"],
+                Skirt: ["S", "M", "L", "XL"],
+            },
+        },
+        kids: {
+            subcategories: ["Shirt", "Pants", "Shorts"],
+            sizes: {
+                Shirt: ["2T", "3T", "4T", "5T"],
+                Pants: ["2T", "3T", "4T", "5T"],
+                Shorts: ["2T", "3T", "4T"],
+            },
+        },
+    };
 
     const handleCloseModal = () => {
         navigate("/retailer/product-list");
@@ -19,36 +52,26 @@ function RetailerProductDetail() {
         setProductDetails({ ...productDetails, [name]: value });
     };
 
-    const handleAddSize = () => {
-        if (newSize.trim()) {
-            setProductDetails({
-                ...productDetails,
-                category: {
-                    ...productDetails.category,
-                    size: [...productDetails.category.size, newSize],
-                },
-            });
-            setNewSize("");
-        }
-    };
+    const handleCategoryChange = (e) => {
+        setCategory(e.target.value);
+        setSubcategory("");
+        setSize("");
+      };
+    
+      const handleSubcategoryChange = (e) => {
+        setSubcategory(e.target.value);
+        setSize("");
+      };
+    
+      const handleSizeChange = (e) => {
+        setSize(e.target.value);
+      };
 
-    const handleAddColor = () => {
-        if (newColor.trim()) {
-            setProductDetails({
-                ...productDetails,
-                category: {
-                    ...productDetails.category,
-                    color: [...productDetails.category.color, newColor],
-                },
-            });
-            setNewColor("");
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setImage(URL.createObjectURL(file));
         }
-    };
-
-    const handleAddImages = (e) => {
-        const files = Array.from(e.target.files);
-        const newImageURLs = files.map((file) => URL.createObjectURL(file));
-        setNewImages([...newImages, ...newImageURLs]);
     };
 
     const handleSaveChanges = () => {
@@ -66,192 +89,137 @@ function RetailerProductDetail() {
     };
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.header}>Product Details</h1>
-            <div style={styles.card}>
-                <div style={styles.field}>
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={productDetails.name}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                </div>
-                <div style={styles.field}>
-                    <label>Description:</label>
-                    <textarea
-                        name="description"
-                        value={productDetails.description}
-                        onChange={handleInputChange}
-                        style={styles.textarea}
-                    />
-                </div>
-                <div style={styles.field}>
-                    <label>Category Type:</label>
-                    <input
-                        type="text"
-                        name="category"
-                        value={productDetails.category.type}
-                        readOnly
-                        style={styles.input}
-                    />
-                </div>
-                <div style={styles.field}>
-                    <label>Price:</label>
-                    <input
-                        type="text"
-                        name="price"
-                        value={productDetails.price}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                </div>
-                <div style={styles.field}>
-                    <label>Discount Price:</label>
-                    <input
-                        type="text"
-                        name="discountPrice"
-                        value={productDetails.discountPrice}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                </div>
-                <div style={styles.field}>
-                    <label>Stock:</label>
+        <div className="flex flex-col lg:flex-row gap-8 p-6 bg-gray-100 min-h-screen">
+            {/* Image Upload Section */}
+            <div
+                className="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 w-full lg:w-1/3 cursor-pointer bg-white"
+                style={{ height: "500px" }}
+                onClick={() => document.getElementById("imageUpload").click()}
+            >
+                {image ? (
+                    <img src={productDetails.image} alt="Uploaded" className="w-full h-full object-cover" />
+                ) : (
+                    <p className="text-gray-500 text-lg">Click to Add Image</p>
+                )}
+                <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                />
+            </div>
+
+            {/* Product Details Section */}
+            <div className="flex flex-col gap-6 w-full lg:w-2/3">
+                {/* Product Title */}
+                <input
+                    type="text"
+                    value={productDetails.name}
+                    onChange={(e) => setProductTitle(e.target.value)}
+                    placeholder="Product Title"
+                    className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+
+                {/* Price, Discounted Price, Quantity */}
+                <div className="flex gap-4">
                     <input
                         type="number"
-                        name="stock"
+                        value={productDetails.price}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        placeholder="Price"
+                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="number"
+                        value={productDetails.discountPrice}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        placeholder="Discounted Price"
+                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="number"
                         value={productDetails.stock}
-                        onChange={handleInputChange}
-                        style={styles.input}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        placeholder="Quantity"
+                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
-                <div style={styles.field}>
-                    <label>Status:</label>
+
+                {/* Description */}
+                <textarea
+                    value={productDetails.description}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    placeholder="Description"
+                    rows="4"
+                    className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                ></textarea>
+
+                {/* Category, Subcategory, Sizes */}
+                <div className="flex gap-4">
+                    {/* Category */}
                     <select
-                        name="status"
-                        value={productDetails.status}
-                        onChange={handleInputChange}
-                        style={styles.select}
+                        value={productDetails.category}
+                        onChange={handleCategoryChange}
+                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="" disabled>
+                            Select Category
+                        </option>
+                        {Object.keys(categoryData).map((cat) => (
+                            <option key={cat} value={cat}>
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Subcategory */}
+                    <select
+                        value={productDetails.subcategories}
+                        onChange={handleSubcategoryChange}
+                        disabled={!category}
+                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                        <option value="" disabled>
+                            Select Subcategory
+                        </option>
+                        {category &&
+                            categoryData[category].subcategories.map((subcat) => (
+                                <option key={subcat} value={subcat}>
+                                    {subcat}
+                                </option>
+                            ))}
+                    </select>
+
+                    {/* Sizes */}
+                    <select
+                        value={productDetails.sizes}
+                        onChange={handleSizeChange}
+                        disabled={!subcategory}
+                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                        <option value="" disabled>
+                            Select Size
+                        </option>
+                        {subcategory &&
+                            categoryData[category].sizes[subcategory].map((size) => (
+                                <option key={size} value={size}>
+                                    {size}
+                                </option>
+                            ))}
                     </select>
                 </div>
 
-                {/* Add Size */}
-                <div style={styles.field}>
-                    <p>Sizes: {productDetails.category.size.join(", ")}</p>
-                    <div style={styles.inlineField}>
-                        <input
-                            type="text"
-                            value={newSize}
-                            onChange={(e) => setNewSize(e.target.value)}
-                            placeholder="Add Size"
-                            style={styles.inputSmall}
-                        />
-                        <button style={styles.addButton} onClick={handleAddSize}>
-                            Add
-                        </button>
-                    </div>
-                    
-                </div>
-
-                {/* Add Color */}
-                <div style={styles.field}>
-                    <p>Colors: {productDetails.category.color.join(", ")}</p>
-                    <div style={styles.inlineField}>
-                        <input
-                            type="text"
-                            value={newColor}
-                            onChange={(e) => setNewColor(e.target.value)}
-                            placeholder="Add Color"
-                            style={styles.inputSmall}
-                        />
-                        <button style={styles.addButton} onClick={handleAddColor}>
-                            Add
-                        </button>
-                    </div>
-                </div>
-
-                {/* Add Images */}
-                <div style={styles.field}>
-                    <label>Images:</label>
-                    <input
-                        type="file"
-                        multiple
-                        onChange={handleAddImages}
-                        style={styles.input}
-                    />
-                    <div style={styles.images}>
-                        {newImages.map((img, index) => (
-                            <img
-                                key={index}
-                                src={img}
-                                alt={`New Product ${index + 1}`}
-                                style={styles.image}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Display Existing Images */}
-                <div style={styles.images}>
-                    {productDetails.image[0].url.map((img, index) => (
-                        <img
-                            key={index}
-                            src={img}
-                            alt={`Product ${index + 1}`}
-                            style={styles.image}
-                        />
-                    ))}
-                </div>
-
-                <div style={styles.modalActions}>
-                    <button style={styles.saveButton} onClick={handleSaveChanges}>
-                        Save Changes
-                    </button>
-                    <button style={styles.closeButton} onClick={handleCloseModal}>
-                        Close
-                    </button>
-                </div>
+                {/* Add Product Button */}
+                <button
+                    onClick={handleSaveChanges}
+                    className="bg-blue-500 text-white py-3 px-6 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                    Add Product
+                </button>
             </div>
         </div>
     );
 }
-
-const styles = {
-    container: { padding: "20px", fontFamily: "Roboto, sans-serif", backgroundColor: "#f9f9f9" },
-    header: { textAlign: "center", color: "#333", fontSize: "24px", marginBottom: "20px" },
-    card: { padding: "20px", backgroundColor: "#fff", width: "800px", borderRadius: "8px", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", justifySelf: "center" },
-    field: { marginBottom: "15px" },
-    input: { width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" },
-    inputSmall: { width: "70%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px", marginRight: "10px" },
-    textarea: { width: "100%", height: "80px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" },
-    select: { width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" },
-    images: { display: "flex", gap: "10px", marginBottom: "15px" },
-    image: { width: "100px", height: "100px", objectFit: "cover", borderRadius: "4px" },
-    inlineField: { display: "flex", alignItems: "center" },
-    addButton: { padding: "10px 15px", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" },
-    modalActions: { display: "flex", justifyContent: "space-between", marginTop: "20px" },
-    closeButton: {
-        padding: "10px 20px",
-        backgroundColor: "#dc3545",
-        color: "#fff",
-        border: "none",
-        borderRadius: "4px",
-        cursor: "pointer",
-    },
-    saveButton: {
-        padding: "10px 20px",
-        backgroundColor: "#28a745",
-        color: "#fff",
-        border: "none",
-        borderRadius: "4px",
-        cursor: "pointer",
-    },
-};
 
 export default RetailerProductDetail;
