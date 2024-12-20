@@ -44,20 +44,17 @@ function OrderDetailsPage() {
             </div>
             <h2 style={styles.subHeader}>Products</h2>
             <div style={styles.productList}>
-                {order.products.map((product, index) => (
                     <div key={index} style={styles.productCard}>
                         <img
-                            src={product.image}
-                            alt={product.name}
+                            src={order.image}
+                            alt={order.name}
                             style={styles.productImage}
                         />
-                        <p><strong>Name:</strong> {product.name}</p>
-                        <p><strong>Quantity:</strong> {product.quantity}</p>
-                        <p><strong>Size:</strong> {product.size}</p>
-                        <p><strong>Color:</strong> {product.color}</p>
-                        <p><strong>Category:</strong> {product.category}</p>
+                        <p><strong>Name:</strong> {order.prod_name}</p>
+                        <p><strong>Quantity:</strong> {order.qty}</p>
+                        <p><strong>Size:</strong> {order.size}</p>
+                        <p><strong>Color:</strong> {order.color}</p>
                     </div>
-                ))}
             </div>
             <div style={styles.modalActions}>
                 <button style={styles.saveButton} onClick={handleSaveChanges}>
