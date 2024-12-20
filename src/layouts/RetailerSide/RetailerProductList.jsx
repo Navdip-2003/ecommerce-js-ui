@@ -1,70 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
-import product1 from '../../assets/images/product1.jpg';
-import product2 from '../../assets/images/product2.jpg';
-import product3 from '../../assets/images/product3.jpg';
+import Cookies from "js-cookie";
 
 function RetailerProductList() {
     const navigate = useNavigate();
-    const productsData = [
-        {
-            productId: "u47d5f5",
-            name: "Half Sliv T-Shirt",
-            description: "100% Cotton, Slim Fit T-Shirt",
-            category: "men",
-            subcategories: "T-Shirt",
-            sizes: "M",
-            price: "599",
-            discountPrice: "399",
-            stock: "56",
-            image: product1,
-            status: "Active",
-        },
-        {
-            productId: "fd565s4",
-            name: "Casual Shirt",
-            description: "100% Cotton, Slim Fit Shirt",
-            category: "women",
-            subcategories: "Dress",
-            sizes: "S",
-            price: "999",
-            discountPrice: "699",
-            stock: "49",
-            image: product2,
-            status: "Inactive",
-        },
-        {
-            productId: "k5d4cv1",
-            name: "Jeans",
-            description: "100% Cotton, Regular Fit Jeans",
-            category: "men",
-            subcategories: "Jeans",
-            sizes: "32",
-            price: "1599",
-            discountPrice: "999",
-            stock: "66",
-            image: product3,
-            status: "Inactive",
-        },
-        {
-            productId: "e3d5df3",
-            name: "Jacket",
-            description: "100% Cotton, Slim Fit Jacket",
-            category: "kids",
-            subcategories: "Shirt",
-            sizes: "2T",
-            price: "2599",
-            discountPrice: "1699",
-            stock: "25",
-            image: product1,
-            status: "Active",
-        },
-    ];
+    const [products, setProducts] = useState([]); // Initialize as an empty array
+    const [loading, setLoading] = useState(true); // State to track loading status
+    const [error, setError] = useState(null); // State to track errors
 
-    const [product] = useState(productsData);
 
+    useEffect(() => {
+        // Fetch data from API
+        const fetchProducts = async () => {
+            try {
+                // Retrieve userData from cookies
+                let userData = null;
+                try {
+                    const userDataCookie = Cookies.get("userData"); // Fetch from cookie
+                    if (userDataCookie) {
+                        userData = JSON.parse(userDataCookie); // Parse JSON string
+                    }
+                } catch (err) {
+                    console.error("Failed to parse userData from cookie:", err);
+                }
+
+                const response = await fetch(`http://localhost:8080/product/retailer/${userData.id}`);
+                const json = await response.json();
+
+                if (json.success && json.data && Array.isArray(json.data.products)) {
+                    setProducts(json.data.products); // Access products array
+                } else {
+                    console.error("Unexpected API response structure:", json);
+                    setError("Invalid data format received from server.");
+                }
+            } catch (err) {
+                setError("Failed to fetch products. Please try again.");
+                console.error("Error fetching products:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    if (loading) {
+        return <div>Loading products...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <div style={styles.container}>
@@ -77,19 +64,19 @@ function RetailerProductList() {
                             <th style={styles.th}>Product Id</th>
                             <th style={styles.th}>Product Name</th>
                             <th style={styles.th}>Price</th>
-                            <th style={styles.th}>Category</th>
+                            <th style={styles.th}>Stock</th>
                             <th style={styles.th}>Status</th>
                             <th style={styles.th}>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {product.map((product, index) => (
+                        {products.map((product, index) => (
                             <tr key={index} style={styles.tr}>
                                 <td style={styles.td}>{index + 1}</td>
-                                <td style={styles.td}>{product.productId}</td>
+                                <td style={styles.td}>{product.id}</td>
                                 <td style={styles.td}>{product.name}</td>
-                                <td style={styles.td}>₹{product.discountPrice}</td>
-                                <td style={styles.td}>{product.category}</td>
+                                <td style={styles.td}>₹{product.price}</td>
+                                <td style={styles.td}>{product.stock}</td>
                                 <td style={styles.td}>
                                     <span
                                         style={{
@@ -112,7 +99,6 @@ function RetailerProductList() {
                                     >
                                         <FaEye />
                                     </button>
-
                                 </td>
                             </tr>
                         ))}

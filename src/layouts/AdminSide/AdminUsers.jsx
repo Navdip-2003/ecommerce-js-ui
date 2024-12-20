@@ -1,49 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import defaultProfile from '../../assets/images/profile-user.png';
 
 function AdminUsers() {
     // Sample user data
-    const [users, setUsers] = useState([
-        {
-            id: 1,
-            firstName: "John",
-            lastName: "Doe",
-            phoneNo: "1234567890",
-            status: "Active",
-            profileImage: "https://via.placeholder.com/150",
-            email: "john.doe@example.com",
-            addresses: [
-                { street: "123 Main St", city: "Cityville", state: "Stateville", pinCode: "12345" },
-                { street: "456 Side St", city: "Townsville", state: "Regionville", pinCode: "67890" },
-            ],
-        },
-        {
-            id: 2,
-            firstName: "Jane",
-            lastName: "Smith",
-            phoneNo: "9876543210",
-            status: "Inactive",
-            profileImage: "https://via.placeholder.com/150",
-            email: "jane.smith@example.com",
-            addresses: [
-                { street: "789 Another St", city: "Metropolis", state: "Stateville", pinCode: "54321" },
-            ],
-        },
-        {
-            id: 3,
-            firstName: "Alice",
-            lastName: "Johnson",
-            phoneNo: "5678901234",
-            status: "Active",
-            profileImage: "https://via.placeholder.com/150",
-            email: "alice.johnson@example.com",
-            addresses: [
-                { street: "101 Example Rd", city: "Exampleton", state: "Stateville", pinCode: "11223" },
-            ],
-        },
-    ]);
-
+    const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null); // Holds data of the selected user
     const [isModalOpen, setIsModalOpen] = useState(false); // Tracks modal state
+
+    useEffect(() => {
+        // Fetch data from API
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/user/all?type=U`);
+                const json = await response.json();
+
+                if (json.success && json.data && Array.isArray(json.data)) {
+                    setUsers(json.data); // Access products array
+                } else {
+                    console.error("Unexpected API response structure:", json);
+                    setError("Invalid data format received from server.");
+                }
+            } catch (err) {
+                setError("Failed to fetch Users. Please try again.");
+                console.error("Error fetching users:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     const handleViewDetails = (user) => {
         setSelectedUser(user);
@@ -54,13 +41,43 @@ function AdminUsers() {
         setSelectedUser({ ...selectedUser, status });
     };
 
-    const handleUpdateStatus = () => {
-        setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user.id === selectedUser.id ? { ...user, status: selectedUser.status } : user
-            )
-        );
-        setIsModalOpen(false);
+    const handleUpdateStatus = async () => {
+        try {
+            // Construct the API URL with query parameters
+            const apiUrl = `http://localhost:8080/user/status?Id=${selectedUser.id}&status=${selectedUser.status}`;
+
+            // Make the API call
+            const response = await fetch(apiUrl, {
+                method: "PUT", // Use "PUT" or "POST" based on your API's requirements
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            // Log response data for debugging
+            console.log('API Response:', data);
+
+            if (response.ok && data.success) {
+                // Update the local user list
+                setUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === selectedUser.id ? { ...user, status: selectedUser.status } : user
+                    )
+                );
+                setIsModalOpen(false); // Close the modal
+                alert("Status updated successfully!");
+            } else {
+                // Log error data if status is not 'success'
+                console.error("Failed to update status:", data.message);
+                alert(`Failed to update status: ${data.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            // Log the error to the console
+            console.error("Error updating status:", error);
+            alert("An error occurred. Please try again.");
+        }
     };
 
     return (
@@ -92,11 +109,10 @@ function AdminUsers() {
                                 <td className="px-6 py-4">{user.id}</td> {/* User ID */}
                                 <td className="px-6 py-4">{user.firstName}</td>
                                 <td className="px-6 py-4">{user.lastName}</td>
-                                <td className="px-6 py-4">{user.phoneNo}</td>
+                                <td className="px-6 py-4">{user.mobileNumber}</td>
                                 <td
-                                    className={`px-6 py-4 font-semibold ${
-                                        user.status === "Active" ? "text-green-500" : "text-red-500"
-                                    }`}
+                                    className={`px-6 py-4 font-semibold ${user.status === "active" ? "text-green-500" : "text-red-500"
+                                        }`}
                                 >
                                     {user.status}
                                 </td>
@@ -127,7 +143,7 @@ function AdminUsers() {
                         <h2 className="text-xl font-bold mb-4 text-gray-700">User Details</h2>
                         <div className="flex flex-col items-center mb-6">
                             <img
-                                src={selectedUser.profileImage}
+                                src={selectedUser.profileImage || defaultProfile}
                                 alt="Profile"
                                 className="w-24 h-24 rounded-full mb-4 border-4 border-blue-500"
                             />
@@ -141,16 +157,24 @@ function AdminUsers() {
                                 <strong>Email:</strong> {selectedUser.email}
                             </p>
                             <p className="mb-4 text-gray-600">
-                                <strong>Phone No:</strong> {selectedUser.phoneNo}
+                                <strong>Phone No:</strong> {selectedUser.mobileNumber}
                             </p>
                             <div className="text-left w-full">
-                                <strong className="block text-gray-600 mb-2">Addresses:</strong>
+                                <strong className="block text-gray-600 mb-2">Addresse:</strong>
                                 <ul className="list-disc list-inside space-y-1">
-                                    {selectedUser.addresses.map((address, index) => (
-                                        <li key={index} className="text-gray-600">
-                                            {address.street}, {address.city}, {address.state} - {address.pinCode}
-                                        </li>
-                                    ))}
+                                    {selectedUser.address && Array.isArray(selectedUser.address) && selectedUser.address.length > 0 ? (
+                                        selectedUser.address.map((addr, index) => (
+                                            <div key={index} className="text-gray-600">
+                                                <strong>Type:</strong> {addr.type} <br />
+                                                <strong>Street:</strong> {addr.street} <br />
+                                                <strong>City:</strong> {addr.city}<br />
+                                                <strong>State:</strong> {addr.state}<br />
+                                                <strong>Pin Code:</strong> {addr.pinCode}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <li className="text-gray-600">No addresses available.</li>
+                                    )}
                                 </ul>
                             </div>
                         </div>
@@ -167,8 +191,10 @@ function AdminUsers() {
                                 value={selectedUser.status}
                                 onChange={(e) => handleStatusChange(e.target.value)}
                             >
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="pending">Pending</option>
+                                <option value="deleted">Deleted</option>
                             </select>
                         </div>
                         <button
