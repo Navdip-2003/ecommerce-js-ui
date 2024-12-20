@@ -1,36 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import defaultProfile from '../../assets/images/profile-user.png';
 
 function AdminRetailers() {
     // Sample user data
-    const [retailer, setRetailers] = useState([
-        {
-            id: 1,
-            storeName: "John",
-            retailerName: "Doe",
-            phoneNo: "1234567890",
-            status: "Active",
-            profileImage: "https://via.placeholder.com/150",
-            email: "john.doe@example.com",
-            addresses: [
-                { street: "123 Main St", city: "Cityville", state: "Stateville", pinCode: "12345" },
-            ],
-        },
-        {
-            id: 2,
-            storeName: "Jane",
-            retailerName: "Smith",
-            phoneNo: "9876543210",
-            status: "Inactive",
-            profileImage: "https://via.placeholder.com/150",
-            email: "jane.smith@example.com",
-            addresses: [
-                { street: "789 Another St", city: "Metropolis", state: "Stateville", pinCode: "54321" },
-            ],
-        },
-    ]);
-
+    const [retailer, setRetailers] = useState([]);
     const [selectedRetailer, setSelectedRetailer] = useState(null); // Holds data of the selected user
     const [isModalOpen, setIsModalOpen] = useState(false); // Tracks modal state
+
+    useEffect(() => {
+        // Fetch data from API
+        const fetchRetailers = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/user/all?type=R`);
+                const json = await response.json();
+
+                if (json.success && json.data && Array.isArray(json.data)) {
+                    setRetailers(json.data); // Access products array
+                } else {
+                    console.error("Unexpected API response structure:", json);
+                    setError("Invalid data format received from server.");
+                }
+            } catch (err) {
+                setError("Failed to fetch Users. Please try again.");
+                console.error("Error fetching users:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRetailers();
+    }, []);
 
     const handleViewDetails = (retailer) => {
         setSelectedRetailer(retailer);
@@ -41,13 +41,43 @@ function AdminRetailers() {
         setSelectedRetailer({ ...selectedRetailer, status });
     };
 
-    const handleUpdateStatus = () => {
-        setRetailers((prevRetailers) =>
-            prevRetailers.map((retailer) =>
-                retailer.id === selectedRetailer.id ? { ...retailer, status: selectedRetailer.status } : retailer
-            )
-        );
-        setIsModalOpen(false);
+    const handleUpdateStatus = async () => {
+        try {
+            // Construct the API URL with query parameters
+            const apiUrl = `http://localhost:8080/user/status?Id=${selectedRetailer.id}&status=${selectedRetailer.status}`;
+
+            // Make the API call
+            const response = await fetch(apiUrl, {
+                method: "PUT", // Use "PUT" or "POST" based on your API's requirements
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            // Log response data for debugging
+            console.log('API Response:', data);
+
+            if (response.ok && data.success) {
+                // Update the local user list
+                setRetailers((prevRetailers) =>
+                    prevRetailers.map((retailer) =>
+                        retailer.id === selectedRetailer.id ? { ...retailer, status: selectedRetailer.status } : retailer
+                    )
+                );
+                setIsModalOpen(false); // Close the modal
+                alert("Status updated successfully!");
+            } else {
+                // Log error data if status is not 'success'
+                console.error("Failed to update status:", data.message);
+                alert(`Failed to update status: ${data.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            // Log the error to the console
+            console.error("Error updating status:", error);
+            alert("An error occurred. Please try again.");
+        }
     };
 
     return (
@@ -62,8 +92,8 @@ function AdminRetailers() {
                         <tr>
                             <th className="px-6 py-3 text-left">No.</th>
                             <th className="px-6 py-3 text-left">ID</th>
+                            <th className="px-6 py-3 text-left">Store Name</th>
                             <th className="px-6 py-3 text-left">First Name</th>
-                            <th className="px-6 py-3 text-left">Last Name</th>
                             <th className="px-6 py-3 text-left">Phone No</th>
                             <th className="px-6 py-3 text-left">Status</th>
                             <th className="px-6 py-3 text-center">Action</th>
@@ -78,12 +108,11 @@ function AdminRetailers() {
                                 <td className="px-6 py-4">{index + 1}</td> {/* Serial Number */}
                                 <td className="px-6 py-4">{retailer.id}</td> {/* User ID */}
                                 <td className="px-6 py-4">{retailer.storeName}</td>
-                                <td className="px-6 py-4">{retailer.retailerName}</td>
-                                <td className="px-6 py-4">{retailer.phoneNo}</td>
+                                <td className="px-6 py-4">{retailer.firstName}</td>
+                                <td className="px-6 py-4">{retailer.mobileNumber}</td>
                                 <td
-                                    className={`px-6 py-4 font-semibold ${
-                                        retailer.status === "Active" ? "text-green-500" : "text-red-500"
-                                    }`}
+                                    className={`px-6 py-4 font-semibold ${retailer.status === "active" ? "text-green-500" : "text-red-500"
+                                        }`}
                                 >
                                     {retailer.status}
                                 </td>
@@ -114,7 +143,7 @@ function AdminRetailers() {
                         <h2 className="text-xl font-bold mb-4 text-gray-700">Retailer Details</h2>
                         <div className="flex flex-col items-center mb-6">
                             <img
-                                src={selectedRetailer.profileImage}
+                                src={selectedRetailer.image || defaultProfile}
                                 alt="Profile"
                                 className="w-24 h-24 rounded-full mb-4 border-4 border-blue-500"
                             />
@@ -128,16 +157,24 @@ function AdminRetailers() {
                                 <strong>Email:</strong> {selectedRetailer.email}
                             </p>
                             <p className="mb-4 text-gray-600">
-                                <strong>Phone No:</strong> {selectedRetailer.phoneNo}
+                                <strong>Phone No:</strong> {selectedRetailer.mobileNumber}
                             </p>
                             <div className="text-left w-full">
-                                <strong className="block text-gray-600 mb-2">Addresses:</strong>
+                                <strong className="block text-gray-600 mb-2">Addresse:</strong>
                                 <ul className="list-disc list-inside space-y-1">
-                                    {selectedRetailer.addresses.map((address, index) => (
-                                        <li key={index} className="text-gray-600">
-                                            {address.street}, {address.city}, {address.state} - {address.pinCode}
-                                        </li>
-                                    ))}
+                                    {selectedRetailer.address && Array.isArray(selectedRetailer.address) && selectedRetailer.address.length > 0 ? (
+                                        selectedRetailer.address.map((addr, index) => (
+                                            <div key={index} className="text-gray-600">
+                                                <strong>Type:</strong> {addr.type} <br />
+                                                <strong>Street:</strong> {addr.street} <br />
+                                                <strong>City:</strong> {addr.city}<br />
+                                                <strong>State:</strong> {addr.state}<br />
+                                                <strong>Pin Code:</strong> {addr.pinCode}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <li className="text-gray-600">No addresses available.</li>
+                                    )}
                                 </ul>
                             </div>
                         </div>
@@ -154,8 +191,10 @@ function AdminRetailers() {
                                 value={selectedRetailer.status}
                                 onChange={(e) => handleStatusChange(e.target.value)}
                             >
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="pending">Pending</option>
+                                <option value="deleted">Deleted</option>
                             </select>
                         </div>
                         <button

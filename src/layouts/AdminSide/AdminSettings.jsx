@@ -1,27 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function AdminSettings() {
-    const [settings, setSettings] = useState([
-        {
-            id: 1,
-            image: "https://via.placeholder.com/100",
-            mainText: "Setting 1",
-            subText: "Description for setting 1",
-            link: "https://example.com/1",
-            position: "start",
-            status: "Active",
-        },
-        {
-            id: 2,
-            image: "https://via.placeholder.com/100",
-            mainText: "Setting 2",
-            subText: "Description for setting 2",
-            link: "https://example.com/2",
-            position: "end",
-            status: "Inactive",
-        },
-    ]);
-
+    const [settings, setSettings] = useState([]);
     const [selectedSetting, setSelectedSetting] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -34,6 +14,30 @@ function AdminSettings() {
         position: "start",
         status: "Active",
     });
+
+        useEffect(() => {
+            // Fetch data from API
+            const fetchUsers = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/banner/active`);
+                    const json = await response.json();
+    
+                    if (json.success && json.data && Array.isArray(json.data)) {
+                        setSettings(json.data); // Access products array
+                    } else {
+                        console.error("Unexpected API response structure:", json);
+                        setError("Invalid data format received from server.");
+                    }
+                } catch (err) {
+                    setError("Failed to fetch Banner. Please try again.");
+                    console.error("Error fetching Banner:", err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+    
+            fetchUsers();
+        }, []);
 
     const handleViewDetails = (setting) => {
         setSelectedSetting({ ...setting });
@@ -112,7 +116,7 @@ function AdminSettings() {
                             <th style={styles.tableHeader}>Image</th>
                             <th style={styles.tableHeader}>Main Text</th>
                             <th style={styles.tableHeader}>Sub Text</th>
-                            <th style={styles.tableHeader}>Status</th>
+                            <th style={styles.tableHeader}>Position</th>
                             <th style={styles.tableHeader}>Action</th>
                         </tr>
                     </thead>
@@ -121,17 +125,11 @@ function AdminSettings() {
                             <tr key={setting.id} style={styles.tableRow}>
                                 <td style={styles.tableCell}>{index + 1}</td>
                                 <td style={styles.tableCell}>
-                                    <img src={setting.image} alt="Setting" style={styles.image} />
+                                    <img src={setting.imageUrl} alt="Setting" style={styles.image} />
                                 </td>
                                 <td style={styles.tableCell}>{setting.mainText}</td>
                                 <td style={styles.tableCell}>{setting.subText}</td>
-                                <td
-                                    className={`px-6 py-4 font-semibold ${
-                                        setting.status === "Active" ? "text-green-500" : "text-red-500"
-                                    }`}
-                                >
-                                    {setting.status}
-                                </td>
+                                <td style={styles.tableCell}>{setting.position}</td>
                                 <td style={styles.tableCell}>
                                     <button
                                         className="bg-blue-500 text-white px-3 py-2 rounded-full hover:bg-blue-600"
@@ -189,7 +187,7 @@ function Modal({ title, setting, onChange, onImageUpload, onSave, onClose }) {
                         />
                         <div style={styles.imagePreview}>
                             <img
-                                src={setting.image || "https://via.placeholder.com/120"}
+                                src={setting.imageUrl || "https://via.placeholder.com/120"}
                                 alt="Preview"
                                 style={styles.modalImage}
                             />
@@ -235,6 +233,7 @@ function Modal({ title, setting, onChange, onImageUpload, onSave, onClose }) {
                         >
                             <option value="start">Start</option>
                             <option value="end">End</option>
+                            <option value="center">Center</option>
                         </select>
                     </label>
                     <label>
