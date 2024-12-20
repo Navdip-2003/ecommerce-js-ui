@@ -10,97 +10,7 @@ import delivery2 from '../../assets/images/about-us-delivery-2.png';
 import delivery3 from '../../assets/images/about-us-delivery-3.png';
 
 import sizeGuideImage from '../../assets/images/Size_Chart.jpg';
-
-const productData = [
-  {
-    id: 1,
-    name: 'Edna Dress',
-    imageUrl: product1,
-    discountPrice: 600,
-    actualPrice: 500,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#FF0000', '#00FFFF', '#0000FF'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 2,
-    name: 'Elastic Waist Dress',
-    imageUrl: product2,
-    discountPrice: 748,
-    actualPrice: 948,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#000000', '#7F00FF', '#DAA520'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 3,
-    name: '3/4 Sleeve Kimono Dress',
-    imageUrl: product3,
-    discountPrice: 550,
-    actualPrice: 750,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#FF4500', '#FFD700', '#C0C0C0'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 4,
-    name: 'Cape Dress',
-    imageUrl: product1,
-    discountPrice: 788,
-    actualPrice: 900,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#191970', '#8B0000', '#006400'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 5,
-    name: 'Edna Dress',
-    imageUrl: product1,
-    discountPrice: 600,
-    actualPrice: 500,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#FF0000', '#00FFFF', '#0000FF'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 6,
-    name: 'Elastic Waist Dress',
-    imageUrl: product2,
-    discountPrice: 748,
-    actualPrice: 748,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#000000', '#7F00FF', '#DAA520'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 7,
-    name: '3/4 Sleeve Kimono Dress',
-    imageUrl: product3,
-    discountPrice: 550,
-    actualPrice: 550,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#FF4500', '#FFD700', '#C0C0C0'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-  {
-    id: 8,
-    name: 'Cape Dress',
-    imageUrl: product1,
-    discountPrice: 788,
-    actualPrice: 900,
-    description:
-      'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    colors: ['#191970', '#8B0000', '#006400'],
-    size: ['xs','s','m','x','xl','xll']
-  },
-];
+import useFetch from '../../hooks/useFetch';
 
 const aboutUsDelivery = [
   {
@@ -119,9 +29,24 @@ const aboutUsDelivery = [
 
 function ProductDetails() {
   const { id } = useParams();
-  const product = productData.find((product) => product.id === parseInt(id));
+  const { data, loading, error } = useFetch(`/product/${id}`);
   const [selectedSize, setSelectedSize] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Product not found or error fetching data.</div>;
+  }
+  const product = data?.data;
+
+
+  if (!product) {
+    return <div>Product not found!</div>;
+  }
+
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
@@ -138,25 +63,31 @@ function ProductDetails() {
   return (
     <div className="p-6 max-w- mx-auto">
       <div className="flex flex-col md:flex-row">
-        <img src={product.imageUrl} alt={product.name} className="ml-12 mr-12 mb-4 rounded-lg" style={{ width: '600px', height: '700px', objectFit: 'cover' }} />
+        <img src={product.image} alt={product.name} className="ml-12 mr-12 mb-4 rounded-lg" style={{ width: '600px', height: '500px', objectFit: 'cover' }} />
         <div className="md:ml-4">
           <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
-
-          <p className="text-lg mb-2">Price: <span className="line-through text-gray-500">₹{product.actualPrice}</span> ₹{product.discountPrice}</p>
+          {product.discountRate > 0 && (
+          <span className="text-sm text-green-500 ml-2">({product.discountRate}% OFF)</span>
+        )}
+          <p className="text-lg mb-2">Price: <span className="line-through text-gray-500">₹{product.actualPrice}</span> ₹{product.price  }</p>
           <button className="bg-blue-500 text-white py-2 px-4 rounded mr-2">Add to Cart</button>
           <h3 className="font-semibold text-lg mt-4">Available Colors:</h3>
           <div className="flex space-x-2 mb-4">
-            {product.colors.map((color, index) => (
-              <span
-                key={index}
-                className="w-6 h-6 rounded-full"
-                style={{ backgroundColor: color }}
-              ></span>
-            ))}
+          {product.color  && (
+            <div className="flex space-x-2 mb-4">
+                <span
+                  key={index}
+                  className="w-6 h-6 rounded-full"
+                  style={{ backgroundColor: product.color }}
+                ></span>
+            </div>
+          )}
+
+          
           </div>
           <h3 className="font-semibold text-lg">Size Options:</h3>
           <div className="grid grid-cols-3 gap-4 mb-4">
-            {product.size.map((size, index) => (
+            {(product.size?.map((size, index) => (
               <div
                 key={index}
                 onClick={() => handleSizeChange(size)}
@@ -174,7 +105,7 @@ function ProductDetails() {
                 />
                 {size}
               </div>
-            ))}
+            )) || <p>No size options available.</p>)}
           </div>
           <button onClick={togglePopup} className="bg-gray-300 text-black py-2 px-4 rounded">
             Size Guide

@@ -1,9 +1,17 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 function RetailerRegister() {
     const [photo, setPhoto] = useState(null);
     const [errors, setErrors] = useState({});
+    const [isUploading, setIsUploading] = useState(false); // To manage upload state
+      const [apiError, setApiError] = useState("");
+    
+      const [loading, setLoading] = useState(false);  // New loading state
+        const navigate = useNavigate();
+      
+    
     const [formData, setFormData] = useState({
         storeName: '',
         retailerName: '',
@@ -11,6 +19,7 @@ function RetailerRegister() {
         mobile: '',
         street: '',
         city: '',
+        addressType : '',
         state: '',
         pincode: '',
         password: '',
@@ -27,25 +36,37 @@ function RetailerRegister() {
         setFormData((prev) => ({ ...prev, addressType: value }));
     };
 
-    const handlePhotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) {
-                setErrors((prev) => ({ ...prev, photo: 'File size should be less than 2MB' }));
-                return;
-            }
-            if (!['image/jpeg', 'image/png'].includes(file.type)) {
-                setErrors((prev) => ({ ...prev, photo: 'Only JPG and PNG files are allowed' }));
-                return;
-            }
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhoto(reader.result);
-                setErrors((prev) => ({ ...prev, photo: '' }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+
+  const handlePhotoChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setIsUploading(true);
+      setErrors({}); // Clear previous errors
+
+      // Simulate API call to upload image
+      const response = await axios.post("http://localhost:8080/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        setPhoto(response.data.data.image); // Set uploaded image URL
+      } else {
+        throw new Error("Failed to upload image.");
+      }
+    } catch (error) {
+      setErrors({ photo: "Failed to upload image. Please try again." });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
     const validateForm = () => {
         const newErrors = {};
@@ -66,13 +87,63 @@ function RetailerRegister() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log('Form submitted successfully:', formData);
-            // Add your registration logic here (e.g., API call)
+            setErrors({});
+            setLoading(true); // Set loading state to true when submitting
+            try {
+                const response = await axios.post("http://localhost:8080/auth/register", {
+                    storeName: formData.storeName,
+                    firstName: formData.retailerName,
+                    email: formData.email,
+                    mobileNumber: formData.mobile,
+                    password: formData.password,
+                    type: "R", // Defaulting type to 'R'
+                    status: "pending",
+                    address: [
+                        {
+                            type: formData.addressType,
+                            street: formData.street,
+                            city: formData.city,
+                            state: formData.state,
+                            pinCode: formData.pinCode,
+                        },
+                    ],
+                    image: photo,
+                });
+    
+                console.log("Response:", response);
+    
+                if (response.status === 200 && response.data.success) {
+                    console.log("Registration Successful:", response.data);
+                    navigate("/login"); // Redirect to login on successful registration
+                } else {
+                    console.error("API Error:", response.data);
+                    setApiError(response.data.message || "Registration failed. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error details:", error);
+    
+                if (error.response) {
+                    // API responded with an error status code
+                    console.error("Error response data:", error.response.data);
+                    setApiError(error.response.data.message || "Something went wrong.");
+                } else if (error.request) {
+                    // No response received from the server
+                    console.error("Error request:", error.request);
+                    setApiError("Unable to connect to the server.");
+                } else {
+                    // Other errors
+                    console.error("Error message:", error.message);
+                    setApiError("An unexpected error occurred. Please try again.");
+                }
+            } finally {
+                setLoading(false); // Set loading state to false after the request completes
+            }
         }
     };
+    
 
     return (
         <div className="max-w-xl mx-auto m-12 p-6 border rounded rounded-5 shadow-xl bg-white">
@@ -80,45 +151,47 @@ function RetailerRegister() {
             <form onSubmit={handleSubmit}>
                 {/* Profile photo upload button */}
                 <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                    <label htmlFor="photoUpload" style={{ cursor: "pointer" }}>
-                        <div
-                            style={{
-                                width: "150px",
-                                height: "150px",
-                                borderRadius: "50%",
-                                backgroundColor: "#f0f0f0",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                overflow: "hidden",
-                                margin: "0 auto",
-                                border: "2px solid #ddd"
-                            }}
-                        >
-                            {photo ? (
-                                <img
-                                    src={photo}
-                                    alt="Uploaded"
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                    }}
-                                />
-                            ) : (
-                                <span style={{ color: "#888" }}>Add Store Image</span>
-                            )}
-                        </div>
-                    </label>
-                    <input
-                        type="file"
-                        id="photoUpload"
-                        style={{ display: "none" }}
-                        accept="image/*"
-                        onChange={handlePhotoChange}
-                    />
-                    {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
-                </div>
+      <label htmlFor="photoUpload" style={{ cursor: "pointer" }}>
+        <div
+          style={{
+            width: "150px",
+            height: "150px",
+            borderRadius: "50%",
+            backgroundColor: "#f0f0f0",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            overflow: "hidden",
+            margin: "0 auto",
+            border: "2px solid #ddd",
+          }}
+        >
+          {photo ? (
+            <img
+              src={photo}
+              alt="Uploaded"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <span style={{ color: "#888" }}>
+              {isUploading ? "Uploading..." : "Add Store Image"}
+            </span>
+          )}
+        </div>
+      </label>
+      <input
+        type="file"
+        id="photoUpload"
+        style={{ display: "none" }}
+        accept="image/*"
+        onChange={handlePhotoChange}
+      />
+      {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
+    </div>
 
                 {/* Store Name and Retailer Name fields */}
                 <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
@@ -224,7 +297,7 @@ function RetailerRegister() {
                             >
                                 <input
                                     type="radio"
-                                    id="permanent"
+                                    id="Permanent"
                                     name="addressType"
                                     value="Permanent"
                                     checked={formData.addressType === 'Permanent'}
@@ -252,7 +325,7 @@ function RetailerRegister() {
                             >
                                 <input
                                     type="radio"
-                                    id="current"
+                                    id="Current"
                                     name="addressType"
                                     value="Current"
                                     checked={formData.addressType === 'Current'}
@@ -382,24 +455,37 @@ function RetailerRegister() {
                     />
                     {errors.confirmPassword && <p style={{ color: "red" }}>{errors.confirmPassword}</p>}
                 </div>
+                {apiError && <p style={{ color: "red", fontSize: "14px", marginTop: "10px" }}>{apiError}</p>}
+
 
                 <button
-                    type="submit"
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginTop: "10px",
-                        backgroundColor: "#28a745",
-                        color: "#fff",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        borderRadius: "5px",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    Register
-                </button>
+          type="submit"
+          style={{
+            width: "100%",
+    padding: "10px",
+    marginTop: "10px",
+    backgroundColor: "#28a745",
+    color: "#fff",
+    fontSize: "16px",
+    fontWeight: "bold",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",        // Use flex to align text and spinner
+    justifyContent: "center", // Center content (horizontally) by default
+    alignItems: "center",   // Vertically center the text and spinner
+    gap: "10px",     
+          }}
+        >
+          {loading ? (
+            <>
+                <span>Loading...</span>
+                <div className="spinner center"></div>
+            </>
+          ) : (
+            "Register"
+          )}
+        </button>
             </form>
 
             {/* Login link */}
