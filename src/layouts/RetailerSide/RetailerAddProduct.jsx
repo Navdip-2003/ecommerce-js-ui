@@ -1,77 +1,119 @@
 import React, { useState } from "react";
+import useFetch from "../../hooks/useFetch";
 
 const RetailerAddProduct = () => {
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
-  const [size, setSize] = useState("");
-  const [image, setImage] = useState(null);
-  const [productTitle, setProductTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [discountedPrice, setDiscountedPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(""); // Main category
+  const [subcategory, setSubcategory] = useState(""); // Subcategory
+  const [size, setSize] = useState(""); // Size selection
+  const [image, setImage] = useState(null); // Image upload state
+  const [productTitle, setProductTitle] = useState(""); // Product title
+  const [price, setPrice] = useState(""); // Product price
+  const [discountedPrice, setDiscountedPrice] = useState(""); // Discounted price
+  const [quantity, setQuantity] = useState(""); // Quantity
+  const [description, setDescription] = useState(""); // Description
+  const [isUploading, setIsUploading] = useState(false); // State for uploading status
 
-  const categoryData = {
-    men: {
-      subcategories: ["T-Shirt", "Shirt", "Jeans"],
-      sizes: {
-        "T-Shirt": ["S", "M", "L", "XL"],
-        Shirt: ["S", "M", "L", "XL"],
-        Jeans: ["28", "30", "32", "34", "36"],
-      },
-    },
-    women: {
-      subcategories: ["Dress", "Blouse", "Skirt"],
-      sizes: {
-        Dress: ["XS", "S", "M", "L", "XL"],
-        Blouse: ["XS", "S", "M", "L"],
-        Skirt: ["S", "M", "L", "XL"],
-      },
-    },
-    kids: {
-      subcategories: ["Shirt", "Pants", "Shorts"],
-      sizes: {
-        Shirt: ["2T", "3T", "4T", "5T"],
-        Pants: ["2T", "3T", "4T", "5T"],
-        Shorts: ["2T", "3T", "4T"],
-      },
-    },
-  };
 
+  // Fetch categories from the API
+  const { data: categories, loading: categoriesLoading, error: categoriesError } = useFetch("/category/parentcategory");
+
+  // Fetch subcategories based on selected category
+  const { data: subcategories, loading: subcategoriesLoading, error: subcategoriesError } = useFetch(
+    category ? `/category/subcategory/${category}` : null
+  );
+
+  // Handle category selection change
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
-    setSubcategory("");
-    setSize("");
+    setSubcategory(""); // Reset subcategory when category changes
   };
 
+  // Handle subcategory selection change
   const handleSubcategoryChange = (e) => {
     setSubcategory(e.target.value);
-    setSize("");
   };
 
-  const handleSizeChange = (e) => {
-    setSize(e.target.value);
-  };
-
-  const handleImageUpload = (event) => {
+  // Handle image upload
+  const handleImageUpload = async (event) => {
+    console.log("Image Uploading ...");
     const file = event.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      // Set uploading state to true
+      setIsUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("http://localhost:8080/image", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          console.log(result);
+          setImage(result.data.image);
+        } else {
+          console.error("Image upload failed.");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      } finally {
+        // Reset uploading state after completion
+        setIsUploading(false);
+      }
     }
   };
 
-  const handleAddProduct = () => {
-    const productDetails = `
-      Product Title: ${productTitle}
-      Price: ${price}
-      Discounted Price: ${discountedPrice}
-      Quantity: ${quantity}
-      Description: ${description}
-      Category: ${category}
-      Subcategory: ${subcategory}
-      Size: ${size}
-    `;
-    alert(productDetails);
+  // Handle add product form submission
+  const handleAddProduct = async () => {
+    const discountRate = ((discountedPrice / price) * 100).toFixed(2); // Calculate discount rate
+    let userData = null;
+          try {
+            const userDataCookie = Cookies.get('userData'); // Fetch from cookie
+            if (userDataCookie) {
+              userData = JSON.parse(userDataCookie); // Parse JSON string
+            }
+          } catch (error) {
+            console.error("Failed to parse userData from cookie:", error);
+          }
+
+          const productData = {
+            name: productTitle,
+            description: description,
+            price: parseFloat(price), // Ensure price is a float
+            actualPrice: parseFloat(discountedPrice), // Ensure discountedPrice is a float
+            discountRate: parseFloat(discountRate), // Ensure discountRate is a float
+            categoryId: category,
+            subcategoryId: subcategory,
+            size: size,
+            stock: parseInt(quantity), // Ensure quantity is an integer
+            image: image,
+            retailerId: "retailer",
+            status: "ACTIVE", // You can modify this as needed
+          };
+
+    try {
+      const response = await fetch("http://localhost:8080/product/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Product added successfully!");
+      } else {
+        alert("Failed to add product.");
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
   };
 
   return (
@@ -82,7 +124,11 @@ const RetailerAddProduct = () => {
         style={{ height: "500px" }}
         onClick={() => document.getElementById("imageUpload").click()}
       >
-        {image ? (
+        {isUploading ? (
+          <div className="flex justify-center items-center w-full h-full">
+            <div className="circular-progress"></div> {/* Custom Circular Progress */}
+          </div>
+        ) : image ? (
           <img src={image} alt="Uploaded" className="w-full h-full object-cover" />
         ) : (
           <p className="text-gray-500 text-lg">Click to Add Image</p>
@@ -143,56 +189,56 @@ const RetailerAddProduct = () => {
 
         {/* Category, Subcategory, Sizes */}
         <div className="flex gap-4">
-          {/* Category */}
+          {/* Category Dropdown */}
+           {/* Category Dropdown */}
           <select
             value={category}
             onChange={handleCategoryChange}
+            disabled={categoriesLoading || categoriesError}
             className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="" disabled>
-              Select Category
+              {categoriesLoading ? "Loading Categories..." : "Select Category"}
             </option>
-            {Object.keys(categoryData).map((cat) => (
-              <option key={cat} value={cat}>
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </option>
-            ))}
-          </select>
-
-          {/* Subcategory */}
-          <select
-            value={subcategory}
-            onChange={handleSubcategoryChange}
-            disabled={!category}
-            className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="" disabled>
-              Select Subcategory
-            </option>
-            {category &&
-              categoryData[category].subcategories.map((subcat) => (
-                <option key={subcat} value={subcat}>
-                  {subcat}
+            {categories &&
+              categories.data.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
                 </option>
               ))}
           </select>
 
-          {/* Sizes */}
+          {/* Subcategory Dropdown */}
+          <select
+            value={subcategory}
+            onChange={handleSubcategoryChange}
+            // disabled={subcategoriesLoading || !category || subcategoriesError}
+            className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="" disabled>
+              {subcategoriesLoading ? "Loading Subcategories..." : "Select Subcategory"}
+            </option>
+            {subcategories &&
+              subcategories.data.map((subcat) => (
+                <option key={subcat.id} value={subcat.id}>
+                  {subcat.name}
+                </option>
+              ))}
+          </select>
+
+          {/* Size Dropdown */}
           <select
             value={size}
-            onChange={handleSizeChange}
-            disabled={!subcategory}
+            onChange={(e) => setSize(e.target.value)}
             className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="" disabled>
               Select Size
             </option>
-            {subcategory &&
-              categoryData[category].sizes[subcategory].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+            <option value="XL">XL</option>
           </select>
         </div>
 
@@ -204,6 +250,23 @@ const RetailerAddProduct = () => {
           Add Product
         </button>
       </div>
+
+      <style jsx>{`
+        .circular-progress {
+          position: relative;
+          width: 50px;
+          height: 50px;
+          border: 5px solid #f3f3f3;
+          border-top: 5px solid #3498db;
+          border-radius: 50%;
+          animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

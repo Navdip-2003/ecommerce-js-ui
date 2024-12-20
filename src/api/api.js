@@ -1,6 +1,8 @@
+import axios from "axios";
+
 // Create an Axios instance with default settings
 const apiClient = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL, // Use the environment variable for the base URL
+    baseURL:  "http://localhost:8080",
     headers: {
       'Content-Type': 'application/json',
     },
@@ -50,3 +52,25 @@ const apiClient = axios.create({
   export const deleteUser = (userId) => {
     return apiClient.delete(`/users/${userId}`);
   };
+
+
+  //Product
+  export const addProduct = (productData) => {
+    console.log(productData)
+    return "Product Add request ..."
+    // return apiClient.post("/products", productData);
+  };
+
+
+  //Image upload
+  export const uploadImage = (imageFile) => {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    console.log("Uploading image")
+    return apiClient.post("/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+  };
+  

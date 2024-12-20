@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useFetch from '../hooks/useFetch';
 
 function ImageSlider() {
-  const { data, loading, error } = useFetch('http://localhost:8080/banner/active');
+  const { data, loading, error } = useFetch('/banner/active');
   const images = data?.data || [];
 
   const settings = {
