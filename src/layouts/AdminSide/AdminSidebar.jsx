@@ -62,7 +62,6 @@ const styles = {
     padding: '20px',
     backgroundColor: '#f4f4f4',
     overflowY: 'auto',
-    flex: 1,
   },
 };
 

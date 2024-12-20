@@ -49,41 +49,53 @@ function RetailerProductDetail() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setProductDetails({ ...productDetails, [name]: value });
+        setProductDetails((prevDetails) => ({
+            ...prevDetails,
+            [name]: value,
+        }));
     };
 
     const handleCategoryChange = (e) => {
-        setCategory(e.target.value);
-        setSubcategory("");
-        setSize("");
-      };
-    
-      const handleSubcategoryChange = (e) => {
-        setSubcategory(e.target.value);
-        setSize("");
-      };
-    
-      const handleSizeChange = (e) => {
-        setSize(e.target.value);
-      };
+        const value = e.target.value;
+        setProductDetails((prevDetails) => ({
+            ...prevDetails,
+            category: value,
+            subcategories: "", // Reset subcategory and size
+            sizes: "",
+        }));
+    };
+
+    const handleSubcategoryChange = (e) => {
+        const value = e.target.value;
+        setProductDetails((prevDetails) => ({
+            ...prevDetails,
+            subcategories: value,
+            sizes: "", // Reset size
+        }));
+    };
+
+    const handleSizeChange = (e) => {
+        const value = e.target.value;
+        setProductDetails((prevDetails) => ({
+            ...prevDetails,
+            sizes: value,
+        }));
+    };
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            setImage(URL.createObjectURL(file));
+            const imageUrl = URL.createObjectURL(file);
+            setProductDetails((prevDetails) => ({
+                ...prevDetails,
+                image: imageUrl, // Update the image property
+            }));
+            setImage(imageUrl);
         }
     };
 
     const handleSaveChanges = () => {
-        const updatedImages = [
-            ...productDetails.image[0].url,
-            ...newImages,
-        ];
-        const updatedProductDetails = {
-            ...productDetails,
-            image: [{ url: updatedImages }],
-        };
-        console.log("Updated Product Details:", updatedProductDetails);
+        console.log("Updated Product Details:", productDetails);
         alert("Product updated successfully!");
         handleCloseModal();
     };
@@ -115,7 +127,7 @@ function RetailerProductDetail() {
                 {/* Product Title */}
                 <input
                     type="text"
-                    value={productDetails.name}
+                    value={productDetails.name || ""}
                     onChange={(e) => setProductTitle(e.target.value)}
                     placeholder="Product Title"
                     className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -125,21 +137,21 @@ function RetailerProductDetail() {
                 <div className="flex gap-4">
                     <input
                         type="number"
-                        value={productDetails.price}
+                        value={productDetails.price || ""}
                         onChange={(e) => handleInputChange(e.target.value)}
                         placeholder="Price"
                         className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
                         type="number"
-                        value={productDetails.discountPrice}
+                        value={productDetails.discountPrice || ""}
                         onChange={(e) => handleInputChange(e.target.value)}
                         placeholder="Discounted Price"
                         className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
                         type="number"
-                        value={productDetails.stock}
+                        value={productDetails.stock || ""}
                         onChange={(e) => handleInputChange(e.target.value)}
                         placeholder="Quantity"
                         className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -148,7 +160,7 @@ function RetailerProductDetail() {
 
                 {/* Description */}
                 <textarea
-                    value={productDetails.description}
+                    value={productDetails.description || ""}
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder="Description"
                     rows="4"
@@ -159,7 +171,7 @@ function RetailerProductDetail() {
                 <div className="flex gap-4">
                     {/* Category */}
                     <select
-                        value={productDetails.category}
+                        value={productDetails.category || ""}
                         onChange={handleCategoryChange}
                         className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
@@ -175,9 +187,9 @@ function RetailerProductDetail() {
 
                     {/* Subcategory */}
                     <select
-                        value={productDetails.subcategories}
+                        value={productDetails.subcategories || ""}
                         onChange={handleSubcategoryChange}
-                        disabled={!category}
+                        disabled={!productDetails.category}
                         className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                         <option value="" disabled>
@@ -193,9 +205,9 @@ function RetailerProductDetail() {
 
                     {/* Sizes */}
                     <select
-                        value={productDetails.sizes}
+                        value={productDetails.sizes || ""}
                         onChange={handleSizeChange}
-                        disabled={!subcategory}
+                        disabled={!productDetails.subcategories}
                         className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                         <option value="" disabled>

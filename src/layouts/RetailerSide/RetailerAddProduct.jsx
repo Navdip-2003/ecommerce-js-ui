@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
+import Select from "react-select";
 
 const RetailerAddProduct = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState(""); // Main category
   const [subcategory, setSubcategory] = useState(""); // Subcategory
-  const [size, setSize] = useState(""); // Size selection
   const [image, setImage] = useState(null); // Image upload state
   const [productTitle, setProductTitle] = useState(""); // Product title
   const [price, setPrice] = useState(""); // Product price
@@ -12,7 +14,19 @@ const RetailerAddProduct = () => {
   const [quantity, setQuantity] = useState(""); // Quantity
   const [description, setDescription] = useState(""); // Description
   const [isUploading, setIsUploading] = useState(false); // State for uploading status
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSizes, setSelectedSizes] = useState([]);
 
+  const sizeOptions = [
+    { value: "Small", label: "Small" },
+    { value: "Medium", label: "Medium" },
+    { value: "Large", label: "Large" },
+    { value: "XL", label: "XL" },
+  ];
+
+  const handleSizeChange = (selectedOptions) => {
+    setSelectedSizes(selectedOptions.map((option) => option.value)); // Extract values into an array
+  };
 
   // Fetch categories from the API
   const { data: categories, loading: categoriesLoading, error: categoriesError } = useFetch("/category/parentcategory");
@@ -21,6 +35,10 @@ const RetailerAddProduct = () => {
   const { data: subcategories, loading: subcategoriesLoading, error: subcategoriesError } = useFetch(
     category ? `/category/subcategory/${category}` : null
   );
+
+  const handleColorSelect = (color) => {
+    setSelectedColor(color); // Update the selected color
+  };
 
   // Handle category selection change
   const handleCategoryChange = (e) => {
@@ -88,7 +106,8 @@ const RetailerAddProduct = () => {
             discountRate: parseFloat(discountRate), // Ensure discountRate is a float
             categoryId: category,
             subcategoryId: subcategory,
-            size: size,
+            size: selectedSizes,
+            colors: selectedColors,
             stock: parseInt(quantity), // Ensure quantity is an integer
             image: image,
             retailerId: "retailer",
@@ -108,6 +127,7 @@ const RetailerAddProduct = () => {
 
       if (result.success) {
         alert("Product added successfully!");
+        navigate("/retailer/product-list");
       } else {
         alert("Failed to add product.");
       }
@@ -187,10 +207,28 @@ const RetailerAddProduct = () => {
           className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
         ></textarea>
 
+        {/* Color Selection */}
+        <div style={styles.filterSection}>
+          <h3 className="font-semibold">COLOR</h3>
+          <div>
+            {["red", "black", "yellow", "white", "green", "blue", "pink", "purple", "brown", "orange", "gray", "magenta"].map((color) => (
+              <div
+                value={color}
+                key={color}
+                style={{
+                  ...styles.colorBox,
+                  backgroundColor: color,
+                  borderColor: selectedColor === color ? "#333" : "transparent", // Highlight selected color
+                }}
+                onClick={() => handleColorSelect(color)}
+              ></div>
+            ))}
+          </div>
+        </div>
+
         {/* Category, Subcategory, Sizes */}
         <div className="flex gap-4">
           {/* Category Dropdown */}
-           {/* Category Dropdown */}
           <select
             value={category}
             onChange={handleCategoryChange}
@@ -227,20 +265,16 @@ const RetailerAddProduct = () => {
           </select>
 
           {/* Size Dropdown */}
-          <select
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
+          <Select
+            options={sizeOptions}
+            isMulti
+            value={sizeOptions.filter((option) => selectedSizes.includes(option.value))}
+            onChange={handleSizeChange}
+            placeholder="Select Sizes"
             className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="" disabled>
-              Select Size
-            </option>
-            <option value="Small">Small</option>
-            <option value="Medium">Medium</option>
-            <option value="Large">Large</option>
-            <option value="XL">XL</option>
-          </select>
+          />
         </div>
+
 
         {/* Add Product Button */}
         <button
@@ -271,4 +305,19 @@ const RetailerAddProduct = () => {
   );
 };
 
+const styles = {
+  filterSection: { marginBottom: "30px" },
+
+  colorBox: {
+    display: "inline-block",
+    width: "30px",
+    height: "30px",
+    margin: "5px",
+    border: "2px solid transparent",
+    cursor: "pointer",
+  },
+  colorSelected: {
+    borderColor: "#333",
+  },
+};
 export default RetailerAddProduct;
