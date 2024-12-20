@@ -25,10 +25,9 @@ function OrderDetailsPage() {
         <div style={styles.pageContainer}>
             <h1 style={styles.header}>Order Details</h1>
             <div style={styles.orderDetails}>
-                <p><strong>Order ID:</strong> {order.orderId}</p><br/>
-                <p><strong>Customer Name:</strong> {order.customerName}</p><br/>
+                <p><strong>Order ID:</strong> {order.id}</p><br/>
+                <p><strong>Customer ID:</strong> {order.user_id}</p><br/>
                 <p><strong>Address:</strong> {order.address}</p><br/>
-                <p><strong>Payment Status:</strong> {order.paymentStatus}</p><br/>
                 <label>
                     <strong>Status : </strong>
                     <select
@@ -44,7 +43,7 @@ function OrderDetailsPage() {
             </div>
             <h2 style={styles.subHeader}>Products</h2>
             <div style={styles.productList}>
-                    <div key={index} style={styles.productCard}>
+                    <div style={styles.productCard}>
                         <img
                             src={order.image}
                             alt={order.name}
@@ -53,7 +52,6 @@ function OrderDetailsPage() {
                         <p><strong>Name:</strong> {order.prod_name}</p>
                         <p><strong>Quantity:</strong> {order.qty}</p>
                         <p><strong>Size:</strong> {order.size}</p>
-                        <p><strong>Color:</strong> {order.color}</p>
                     </div>
             </div>
             <div style={styles.modalActions}>

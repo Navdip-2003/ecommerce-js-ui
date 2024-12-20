@@ -39,11 +39,9 @@ function RetailerOrder() {
             <tr>
               <th style={styles.th}>#</th>
               <th style={styles.th}>Order Id</th>
-              <th style={styles.th}>Product Name</th>
+              <th style={styles.th}>Product ID</th>
               <th style={styles.th}>Price</th>
-              <th style={styles.th}>Address</th>
               <th style={styles.th}>Status</th>
-              <th style={styles.th}>Payment Status</th>
               <th style={styles.th}>Action</th>
             </tr>
           </thead>
@@ -54,9 +52,6 @@ function RetailerOrder() {
                 <td style={styles.td}>{order.order_id}</td>
                 <td style={styles.td}>{order.prod_id}</td>
                 <td style={styles.td}>{order.total_amount}</td>
-                <td style={styles.td}>{"D-64 GreenWood Soc , Ahemdabad"}</td>
-
-                <td style={styles.td}>{order.status}</td>
                 <td style={styles.td}>
                   <span
                     style={{
@@ -72,7 +67,6 @@ function RetailerOrder() {
                     {order.status}
                   </span>
                 </td>
-                <td style={styles.td}>{order.paymentStatus}</td>
                 <td style={styles.td}>
                   <button
                     style={styles.button}
