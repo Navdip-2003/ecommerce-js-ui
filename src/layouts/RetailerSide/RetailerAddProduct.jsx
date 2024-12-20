@@ -7,6 +7,8 @@ const RetailerAddProduct = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState(""); // Main category
   const [subcategory, setSubcategory] = useState(""); // Subcategory
+  const [sizeOptions, setSizeOptions] = useState([]); // Dynamic size options
+  const [selectedSizes, setSelectedSizes] = useState([]); // Selected sizes
   const [image, setImage] = useState(null); // Image upload state
   const [productTitle, setProductTitle] = useState(""); // Product title
   const [price, setPrice] = useState(""); // Product price
@@ -15,14 +17,7 @@ const RetailerAddProduct = () => {
   const [description, setDescription] = useState(""); // Description
   const [isUploading, setIsUploading] = useState(false); // State for uploading status
   const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSizes, setSelectedSizes] = useState([]);
 
-  const sizeOptions = [
-    { value: "Small", label: "Small" },
-    { value: "Medium", label: "Medium" },
-    { value: "Large", label: "Large" },
-    { value: "XL", label: "XL" },
-  ];
 
   const handleSizeChange = (selectedOptions) => {
     setSelectedSizes(selectedOptions.map((option) => option.value)); // Extract values into an array
@@ -47,9 +42,13 @@ const RetailerAddProduct = () => {
   };
 
   // Handle subcategory selection change
-  const handleSubcategoryChange = (e) => {
-    setSubcategory(e.target.value);
+  const handleSubcategoryChange = async (e) => {
+    const subcategoryId = e.target.value;
+    setSubcategory(subcategoryId);
+    const product = subcategories.data.find((item) => item.id === subcategoryId);
+    setSizeOptions(product.size.map((size) => ({ value: size, label: size })));    
   };
+  
 
   // Handle image upload
   const handleImageUpload = async (event) => {
