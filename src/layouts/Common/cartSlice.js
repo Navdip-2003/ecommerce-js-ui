@@ -17,7 +17,7 @@ const cartSlice = createSlice({
       } else {
         state.items.push({ ...newItem, quantity: 1 });
       }
-      localStorage.setItem('cartItems', JSON.stringify(state.items));  // Store cart data in localStorage or cookies
+      localStorage.setItem('cartItems', JSON.stringify(state.items)); // Persist cart in localStorage
     },
     removeFromCart: (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);

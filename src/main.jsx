@@ -33,6 +33,8 @@ import AdminRetailers from './layouts/AdminSide/AdminRetailers.jsx';
 import AdminProducts from './layouts/AdminSide/AdminProducts.jsx';
 import AdminSettings from './layouts/AdminSide/AdminSettings.jsx';
 import AdminProfile from './layouts/AdminSide/AdminProfile.jsx';
+import { Provider } from 'react-redux';
+import store from './layouts/Common/store.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -92,5 +94,9 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById('root')).render(
-    <RouterProvider router={router} />
+  <StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </StrictMode>
 );

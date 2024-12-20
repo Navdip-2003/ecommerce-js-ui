@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { FaPhoneAlt, FaShoppingBag, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import { useSelector } from 'react-redux';
 
 function Header() {
   const { user, logout } = useAuth();
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const cartItems = useSelector((state) => state.cart.items);
+
+  
+  // Calculate total number of products in the cart
+  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const toggleProfileDropdown = () => {
     setShowProfileDropdown((prev) => !prev);
@@ -105,9 +111,11 @@ function Header() {
             {/* Cart Icon */}
             <Link to="/cart" className="text-black hover:text-gray-600 relative">
               <FaShoppingBag />
-              <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full px-1 transform translate-x-1/2 -translate-y-1/2">
-                3
-              </span>
+              {totalItems > 0 && ( // Show badge only if there are items in the cart
+          <span className="absolute top-0 right-0 bg-black text-white text-xs font-bold rounded-full px-1 transform translate-x-1/2 -translate-y-1/2">
+            {totalItems}
+          </span>
+        )}
             </Link>
           </div>
         )}

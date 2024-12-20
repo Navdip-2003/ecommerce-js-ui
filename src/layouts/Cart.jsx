@@ -1,228 +1,110 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeFromCart, addToCart } from './Common/cartSlice';
 
-import product1 from "../assets/images/product1.jpg";
-import product2 from "../assets/images/product2.jpg";
-import product3 from "../assets/images/product3.jpg";
+function CartPage() {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
-const CartPage = () => {
-    const navigate = useNavigate();
+  const handleRemove = (id) => {
+    dispatch(removeFromCart(id));
+  };
 
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: 'Edna Dress',
-            imageUrl: product1,
-            discountPrice: 600,
-            actualPrice: 500,
-            quantity: 1,
-            description:
-                'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-            color: "Navy",
-            size: "Small",
-        },
-        {
-            id: 2,
-            name: 'Elastic Waist Dress',
-            imageUrl: product2,
-            discountPrice: 748,
-            actualPrice: 948,
-            quantity: 1,
-            description:
-                'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-            color: "Yellow",
-            size: "Medium",
-        },
-        {
-            id: 3,
-            name: '3/4 Sleeve Kimono Dress',
-            imageUrl: product3,
-            discountPrice: 550,
-            actualPrice: 750,
-            quantity: 1,
-            description:
-                'A beautiful 3/4 Sleeve Kimono Dress, perfect for any occasion. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-            color: "Black",
-            size: "Large",
-        },
-    ]);
-    const [isAgreed, setIsAgreed] = useState(false);
+  const handleQuantityChange = (item, type) => {
+    if (type === 'decrease' && item.quantity > 1) {
+      dispatch(removeFromCart(item.id)); // Remove one instance of the item
+      const updatedItem = { ...item, quantity: item.quantity - 1 };
+      dispatch(addToCart(updatedItem)); // Add the item back with updated quantity
+    } else if (type === 'increase') {
+      dispatch(addToCart(item)); // Add one more instance of the item
+    }
+  };
 
-    const DELIVERY_CHARGE = 49;
-    const HANDLEING_CHARGE = 15;
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
 
-    const handleQuantityChange = (id, delta) => {
-        setCartItems((prevItems) =>
-            prevItems.map((item) =>
-                item.id === id
-                    ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-                    : item
-            )
-        );
-    };
-
-    const handleRemoveItem = (id) => {
-        setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-    };
-
-    const calculateSubtotal = () => {
-        return cartItems.reduce((total, item) => total + item.discountPrice * item.quantity, 0);
-    };
-
-    const subtotal = calculateSubtotal();
-    const finalTotal = subtotal + HANDLEING_CHARGE + DELIVERY_CHARGE;
-
-    const handleContinueToShopping = () => {
-        navigate('/shop');
-    };
-
-    const handleCheckboxChange = () => {
-        setIsAgreed(!isAgreed); // Toggle the checkbox state
-    };
-
-    return (
-        <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
-            <h1 style={{ textAlign: 'center', marginBottom: '20px', fontSize: '25px' }}>YOUR CART</h1>
-            <div style={{ display: "flex", gap: "20px" }}>
-                {/* Left Section: Cart Items */}
-                <div style={{ flex: "2" }}>
-                    <table
-                        style={{
-                            width: "100%",
-                            borderCollapse: "collapse",
-                            marginBottom: "30px",
-                        }}
-                    >
-                        <thead>
-                            <tr style={{ borderBottom: "1px solid #ddd" }}>
-                                <th style={{ textAlign: "left", padding: "10px" }}>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cartItems.map((item) => (
-                                <tr key={item.id} style={{ borderBottom: "1px solid #ddd" }}>
-                                    <td style={{ display: "flex", alignItems: "center", padding: "10px" }}>
-                                        <img
-                                            src={item.imageUrl}
-                                            alt={item.name}
-                                            style={{ width: "80px", height: "80px", marginRight: "10px" }}
-                                        />
-                                        <div>
-                                            <strong>{item.name}</strong>
-                                            <p style={{ margin: "5px 0", color: "#555" }}>
-                                                Color: {item.color} | Size: {item.size}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td style={{ textAlign: "center" }}>₹{item.discountPrice.toFixed(2)}</td>
-                                    <td style={{ textAlign: "center" }}>
-                                        <button
-                                            onClick={() => handleQuantityChange(item.id, -1)}
-                                            style={{
-                                                border: "1px solid #ddd",
-                                                padding: "5px",
-                                                margin: "0 5px",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            -
-                                        </button>
-                                        {item.quantity}
-                                        <button
-                                            onClick={() => handleQuantityChange(item.id, 1)}
-                                            style={{
-                                                border: "1px solid #ddd",
-                                                padding: "5px",
-                                                margin: "0 5px",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            +
-                                        </button>
-                                    </td>
-                                    <td style={{ textAlign: "center" }}>
-                                        ₹{(item.discountPrice * item.quantity).toFixed(2)}
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleRemoveItem(item.id)}
-                                            style={{
-                                                background: "none",
-                                                border: "none",
-                                                color: "red",
-                                                cursor: "pointer",
-                                                fontSize: "18px",
-                                            }}
-                                        >
-                                            ✕
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button
-                        style={{
-                            color: "#28a745",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            fontSize: "16px",
-                        }}
-                        onClick={() => handleContinueToShopping()}
-                    >
-                        ← Continue Shopping
-                    </button>
+  return (
+    <div className="cart-page p-6 max-w-6xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">YOUR CART</h2>
+      {cartItems.length === 0 ? (
+        <p className="text-center text-lg">Your cart is empty.</p>
+      ) : (
+        <div className="flex flex-col md:flex-row justify-between">
+          {/* Cart Items Section */}
+          <div className="w-full md:w-3/4">
+            {cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="cart-item flex items-center justify-between mb-6 p-4 border rounded-lg shadow-sm"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-20 h-20 object-cover rounded"
+                />
+                <div className="flex-1 ml-6">
+                  <p className="font-semibold">{item.name}</p>
+                  <p>Color: {item.color} | Size: {item.size}</p>
+                  <p>Price: ₹{item.price}</p>
                 </div>
-
-                {/* Right Section: Summary */}
-                <div style={{ flex: "1", border: "1px solid #ddd", padding: "20px" }}>
-                    <h3 style={{ marginBottom: "15px" }}>SUMMARY</h3>
-                    <p>Subtotal: ₹{subtotal.toFixed(2)}</p>
-                    <p>Delivery Charge: ₹{DELIVERY_CHARGE.toFixed(2)}</p>
-                    <p>Handling Charge: ₹{HANDLEING_CHARGE.toFixed(2)}</p>
-                    <hr style={{ margin: "10px 0" }} />
-                    <p style={{ fontWeight: "bold", fontSize: "18px" }}>Total: ₹{finalTotal.toFixed(2)}</p>
-                    <p style={{ color: "#777", fontSize: "14px" }}>
-                        Shipping & taxes are calculated.
-                    </p>
-                    <div style={{ margin: "20px 0" }}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={isAgreed}
-                                onChange={handleCheckboxChange}
-                            />{" "}
-                            I agree with the <Link to="/terms" className="hover:text-gray-500">Terms & conditions</Link>
-                        </label>
-                    </div>
-                    <button
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            backgroundColor: isAgreed ? "#333" : "#888", // Dim color if disabled
-                            color: "white",
-                            border: "none",
-                            cursor: isAgreed ? "pointer" : "not-allowed",
-                            fontWeight: "bold",
-                        }}
-                        disabled={!isAgreed} // Disable button if not agreed
-                        onClick={() =>
-                            navigate("/checkout", {
-                                state: { cartItems, subtotal, finalTotal },
-                            })
-                        }
-                    >
-                        CHECKOUT
-                    </button>
+                <div className="flex items-center space-x-4">
+                  {/* Quantity Buttons */}
+                  <button
+                    onClick={() => handleQuantityChange(item, 'decrease')}
+                    className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400"
+                  >
+                    -
+                  </button>
+                  <p className="text-lg font-semibold">{item.quantity}</p>
+                  <button
+                    onClick={() => handleQuantityChange(item, 'increase')}
+                    className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400"
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => handleRemove(item.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    ✖
+                  </button>
                 </div>
+              </div>
+            ))}
+            <button className="mt-4 text-blue-500 hover:underline">
+              ← Continue Shopping
+            </button>
+          </div>
+
+          {/* Summary Section */}
+          <div className="w-full md:w-1/4 p-4 border rounded-lg shadow-sm bg-gray-100 mt-6 md:mt-0">
+            <h3 className="text-lg font-bold mb-4">SUMMARY</h3>
+            <div className="mb-2">
+              <p>Subtotal: ₹{getTotalPrice()}</p>
+              <p>Delivery Charge: ₹49.00</p>
+              <p>Handling Charge: ₹15.00</p>
             </div>
+            <div className="mt-4 font-bold text-lg">
+              <p>Total: ₹{getTotalPrice() + 49 + 15}</p>
+            </div>
+            <div className="mt-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                />
+                I agree with the Terms & Conditions
+              </label>
+            </div>
+            <button className="bg-gray-400 text-white w-full py-2 mt-4 rounded hover:bg-gray-500">
+              CHECKOUT
+            </button>
+          </div>
         </div>
-    );
-};
+      )}
+    </div>
+  );
+}
 
 export default CartPage;
