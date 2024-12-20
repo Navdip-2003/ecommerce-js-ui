@@ -111,7 +111,7 @@ function AdminUsers() {
                                 <td className="px-6 py-4">{user.lastName}</td>
                                 <td className="px-6 py-4">{user.mobileNumber}</td>
                                 <td
-                                    className={`px-6 py-4 font-semibold ${user.status === "active" ? "text-green-500" : "text-red-500"
+                                    className={`px-6 py-4 font-semibold ${user.status === "active" ? "text-green-500" : user.status === "deleted" ? "text-red-500" : user.status === "inactive" ? "text-blue-500" : "text-gray-500"
                                         }`}
                                 >
                                     {user.status}

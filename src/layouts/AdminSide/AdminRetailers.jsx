@@ -111,7 +111,7 @@ function AdminRetailers() {
                                 <td className="px-6 py-4">{retailer.firstName}</td>
                                 <td className="px-6 py-4">{retailer.mobileNumber}</td>
                                 <td
-                                    className={`px-6 py-4 font-semibold ${retailer.status === "active" ? "text-green-500" : "text-red-500"
+                                    className={`px-6 py-4 font-semibold ${retailer.status === "active" ? "text-green-500" : retailer.status === "deleted" ? "text-red-500" : retailer.status === "inactive" ? "text-blue-500" : "text-gray-500"
                                         }`}
                                 >
                                     {retailer.status}

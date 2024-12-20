@@ -1,46 +1,32 @@
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios
 
 function RetailerProductDetail() {
     const navigate = useNavigate();
     const { state } = useLocation();
     const [productDetails, setProductDetails] = useState(state.product);
-    const [image, setImage] = useState(null);
-    const [productTitle, setProductTitle] = useState("");
-    const [price, setPrice] = useState("");
-    const [discountedPrice, setDiscountedPrice] = useState("");
-    const [quantity, setQuantity] = useState("");
-    const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
-    const [subcategory, setSubcategory] = useState("");
-    const [size, setSize] = useState("");
+    const [image, setImage] = useState(null); // Local state to handle image preview
+    const [selectedColor, setSelectedColor] = useState(""); // Color selection state
+    const [status, setStatus] = useState(productDetails.status || "Active"); // Status state
 
-    const categoryData = {
-        men: {
-            subcategories: ["T-Shirt", "Shirt", "Jeans"],
-            sizes: {
-                "T-Shirt": ["S", "M", "L", "XL"],
-                Shirt: ["S", "M", "L", "XL"],
-                Jeans: ["28", "30", "32", "34", "36"],
-            },
-        },
-        women: {
-            subcategories: ["Dress", "Blouse", "Skirt"],
-            sizes: {
-                Dress: ["XS", "S", "M", "L", "XL"],
-                Blouse: ["XS", "S", "M", "L"],
-                Skirt: ["S", "M", "L", "XL"],
-            },
-        },
-        kids: {
-            subcategories: ["Shirt", "Pants", "Shorts"],
-            sizes: {
-                Shirt: ["2T", "3T", "4T", "5T"],
-                Pants: ["2T", "3T", "4T", "5T"],
-                Shorts: ["2T", "3T", "4T"],
-            },
-        },
+    useEffect(() => {
+        // Set initial image if productDetails already have an image
+        if (productDetails.image) {
+            setImage(productDetails.image);
+        }
+    }, [productDetails]);
+
+    const handleColorSelect = (e) => {
+        setSelectedColor(e.target.value); // Update the selected color
+    };
+
+    const handleStatusSelect = (e) => {
+        setStatus(e.target.value); // Update the selected status
+        setProductDetails((prevDetails) => ({
+            ...prevDetails,
+            status: e.target.value,
+        }));
     };
 
     const handleCloseModal = () => {
@@ -55,49 +41,40 @@ function RetailerProductDetail() {
         }));
     };
 
-    const handleCategoryChange = (e) => {
-        const value = e.target.value;
-        setProductDetails((prevDetails) => ({
-            ...prevDetails,
-            category: value,
-            subcategories: "", // Reset subcategory and size
-            sizes: "",
-        }));
-    };
-
-    const handleSubcategoryChange = (e) => {
-        const value = e.target.value;
-        setProductDetails((prevDetails) => ({
-            ...prevDetails,
-            subcategories: value,
-            sizes: "", // Reset size
-        }));
-    };
-
-    const handleSizeChange = (e) => {
-        const value = e.target.value;
-        setProductDetails((prevDetails) => ({
-            ...prevDetails,
-            sizes: value,
-        }));
-    };
-
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
+            const imageUrl = URL.createObjectURL(file); // Create a URL for the uploaded image
+            setImage(imageUrl); // Update the image preview
             setProductDetails((prevDetails) => ({
                 ...prevDetails,
-                image: imageUrl, // Update the image property
+                image: imageUrl, // Update the productDetails with new image URL
             }));
-            setImage(imageUrl);
         }
     };
 
-    const handleSaveChanges = () => {
-        console.log("Updated Product Details:", productDetails);
-        alert("Product updated successfully!");
-        handleCloseModal();
+    const handleSaveChanges = async () => {
+        try {
+            const response = await axios.put(
+                `http://localhost:8080/product/update/${productDetails.id}`, // Use product ID in URL
+                productDetails, // Pass updated product details as the request body
+                {
+                    headers: {
+                        "Content-Type": "application/json", // Set appropriate headers
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                alert("Product updated successfully!");
+                handleCloseModal(); // Navigate back to the product list
+            } else {
+                alert("Failed to update product. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error updating product:", error);
+            alert("An error occurred while updating the product.");
+        }
     };
 
     return (
@@ -109,7 +86,7 @@ function RetailerProductDetail() {
                 onClick={() => document.getElementById("imageUpload").click()}
             >
                 {image ? (
-                    <img src={productDetails.image} alt="Uploaded" className="w-full h-full object-cover" />
+                    <img src={image} alt="Uploaded" className="w-full h-full object-cover" />
                 ) : (
                     <p className="text-gray-500 text-lg">Click to Add Image</p>
                 )}
@@ -125,110 +102,110 @@ function RetailerProductDetail() {
             {/* Product Details Section */}
             <div className="flex flex-col gap-6 w-full lg:w-2/3">
                 {/* Product Title */}
-                <input
-                    type="text"
-                    value={productDetails.name || ""}
-                    onChange={(e) => setProductTitle(e.target.value)}
-                    placeholder="Product Title"
-                    className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-
+                <div>
+                    <h4 className="font-semibold">Name</h4>
+                    <input
+                        type="text"
+                        value={productDetails.name || ""}
+                        onChange={(e) => handleInputChange(e)}
+                        name="name"
+                        placeholder="Product Title"
+                        className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
                 {/* Price, Discounted Price, Quantity */}
                 <div className="flex gap-4">
-                    <input
-                        type="number"
-                        value={productDetails.price || ""}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                        placeholder="Price"
-                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-                    <input
-                        type="number"
-                        value={productDetails.discountPrice || ""}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                        placeholder="Discounted Price"
-                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-                    <input
-                        type="number"
-                        value={productDetails.stock || ""}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                        placeholder="Quantity"
-                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
+                    <div>
+                        <h4 className="font-semibold">Actual Price</h4>
+                        <input
+                            type="number"
+                            value={productDetails.actualPrice || ""}
+                            onChange={(e) => handleInputChange(e)}
+                            name="actualPrice"
+                            placeholder="Price"
+                            className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                    </div>
+                    <div>
+                        <h4 className="font-semibold">Price</h4>
+                        <input
+                            type="number"
+                            value={productDetails.price || ""}
+                            onChange={(e) => handleInputChange(e)}
+                            name="price"
+                            placeholder="Discounted Price"
+                            className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                    </div>
+                    <div>
+                        <h4 className="font-semibold">Stocks</h4>
+                        <input
+                            type="number"
+                            value={productDetails.stock || ""}
+                            onChange={(e) => handleInputChange(e)}
+                            name="stock"
+                            placeholder="Quantity"
+                            className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                    </div>
                 </div>
 
                 {/* Description */}
-                <textarea
-                    value={productDetails.description || ""}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="Description"
-                    rows="4"
-                    className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                ></textarea>
-
-                {/* Category, Subcategory, Sizes */}
-                <div className="flex gap-4">
-                    {/* Category */}
+                <div>
+                    <h4 className="font-semibold">Description</h4>
+                    <textarea
+                        value={productDetails.description || ""}
+                        onChange={(e) => handleInputChange(e)}
+                        name="description"
+                        placeholder="Description"
+                        rows="4"
+                        className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    ></textarea>
+                </div>
+                {/* Color Dropdown */}
+                <div>
+                    <h4 className="font-semibold">Color</h4>
                     <select
-                        value={productDetails.category || ""}
-                        onChange={handleCategoryChange}
-                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        value={productDetails.color || ""}
+                        onChange={handleColorSelect}
+                        className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
-                        <option value="" disabled>
-                            Select Category
-                        </option>
-                        {Object.keys(categoryData).map((cat) => (
-                            <option key={cat} value={cat}>
-                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        {["red", "black", "yellow", "white", "green", "blue", "pink", "purple", "brown", "orange", "gray", "magenta"].map((color) => (
+                            <option key={color} value={color}>
+                                {color.charAt(0).toUpperCase() + color.slice(1)}
                             </option>
                         ))}
                     </select>
+                </div>
 
-                    {/* Subcategory */}
+                {/* Status Dropdown */}
+                <div>
+                    <h4 className="font-semibold">Status</h4>
                     <select
-                        value={productDetails.subcategories || ""}
-                        onChange={handleSubcategoryChange}
-                        disabled={!productDetails.category}
-                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        value={productDetails.status || ""}
+                        onChange={handleStatusSelect}
+                        className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
-                        <option value="" disabled>
-                            Select Subcategory
-                        </option>
-                        {category &&
-                            categoryData[category].subcategories.map((subcat) => (
-                                <option key={subcat} value={subcat}>
-                                    {subcat}
-                                </option>
-                            ))}
-                    </select>
-
-                    {/* Sizes */}
-                    <select
-                        value={productDetails.sizes || ""}
-                        onChange={handleSizeChange}
-                        disabled={!productDetails.subcategories}
-                        className="flex-1 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    >
-                        <option value="" disabled>
-                            Select Size
-                        </option>
-                        {subcategory &&
-                            categoryData[category].sizes[subcategory].map((size) => (
-                                <option key={size} value={size}>
-                                    {size}
-                                </option>
-                            ))}
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
                     </select>
                 </div>
 
-                {/* Add Product Button */}
-                <button
-                    onClick={handleSaveChanges}
-                    className="bg-blue-500 text-white py-3 px-6 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                    Add Product
-                </button>
+                {/* Action Buttons */}
+                <div className="flex gap-4">
+                    <button
+                        onClick={handleSaveChanges}
+                        className="bg-blue-500 text-white py-3 px-6 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                        Save Changes
+                    </button>
+                    <button
+                        onClick={handleCloseModal}
+                        className="bg-gray-500 text-white py-3 px-6 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    >
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     );

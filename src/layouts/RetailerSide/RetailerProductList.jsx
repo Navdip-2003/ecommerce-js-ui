@@ -82,9 +82,9 @@ function RetailerProductList() {
                                         style={{
                                             ...styles.statusBadge,
                                             backgroundColor:
-                                                product.status === "Active"
+                                                product.status === "ACTIVE"
                                                     ? "#28a745"
-                                                    : product.status === "Inactive"
+                                                    : product.status === "INACTIVE"
                                                         ? "#ffc107"
                                                         : "#17a2b8",
                                         }}
