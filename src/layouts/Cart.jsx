@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { removeFromCart, addToCart } from './Common/cartSlice';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -42,9 +43,48 @@ function CartPage() {
     }
   };
 
-  const handleCheckout = () => {
-    alert("Your Order Successfull Done!");
+
+  const handleCheckout = async () => {
+    if (!userData) {
+      alert("User data is not available. Please log in.");
+      return;
+    }
+  
+    const userId = userData.id; // Assuming `user_id` is available in userData
+  
+    // Helper function to generate a unique order ID
+    const generateOrderId = (index) => {
+      const timestamp = Date.now(); // Current timestamp in milliseconds
+      const randomNum = Math.floor(Math.random() * 10000); // Random 4-digit number
+      return `ORD-${timestamp}-${randomNum}-${index}`;
+    };
+  
+    const orders = cartItems.map((item, index) => ({
+      order_id: generateOrderId(index), // Generate unique order ID
+      user_id: userId,
+      prod_id: item.id, // Assuming `id` represents the product ID
+      total_amount: item.price * item.quantity,
+      qty: item.quantity,
+      size: item.size,
+      prod_name: item.name
+    }));
+  
+    try {
+      const promises = orders.map((order) =>
+        axios.post('http://localhost:8080/orders/add', order)
+      );
+  
+      await Promise.all(promises);
+  
+      alert("Your order has been placed successfully!");
+      navigate('/shop'); // Redirect to a "Thank You" page or order summary
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      alert("An error occurred while placing your order. Please try again.");
+    }
   };
+  
+
 
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
