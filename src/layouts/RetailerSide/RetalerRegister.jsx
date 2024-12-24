@@ -5,13 +5,11 @@ import { useNavigate, Link } from 'react-router-dom';
 function RetailerRegister() {
     const [photo, setPhoto] = useState(null);
     const [errors, setErrors] = useState({});
-    const [isUploading, setIsUploading] = useState(false); // To manage upload state
-      const [apiError, setApiError] = useState("");
-    
-      const [loading, setLoading] = useState(false);  // New loading state
-        const navigate = useNavigate();
-      
-    
+    const [isUploading, setIsUploading] = useState(false);
+    const [apiError, setApiError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         storeName: '',
         retailerName: '',
@@ -19,7 +17,7 @@ function RetailerRegister() {
         mobile: '',
         street: '',
         city: '',
-        addressType : '',
+        addressType: '',
         state: '',
         pincode: '',
         password: '',
@@ -36,48 +34,56 @@ function RetailerRegister() {
         setFormData((prev) => ({ ...prev, addressType: value }));
     };
 
+    const handlePhotoChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-  const handlePhotoChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+        const formData = new FormData();
+        formData.append("file", file);
 
-    // Prepare form data
-    const formData = new FormData();
-    formData.append("file", file);
+        try {
+            setIsUploading(true);
+            setErrors({});
 
-    try {
-      setIsUploading(true);
-      setErrors({}); // Clear previous errors
+            const response = await axios.post("http://localhost:8080/image", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-      // Simulate API call to upload image
-      const response = await axios.post("http://localhost:8080/image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.data.success) {
-        setPhoto(response.data.data.image); // Set uploaded image URL
-      } else {
-        throw new Error("Failed to upload image.");
-      }
-    } catch (error) {
-      setErrors({ photo: "Failed to upload image. Please try again." });
-    } finally {
-      setIsUploading(false);
-    }
-  };
+            if (response.data.success) {
+                setPhoto(response.data.data.image);
+            } else {
+                throw new Error("Failed to upload image.");
+            }
+        } catch (error) {
+            setErrors({ photo: "Failed to upload image. Please try again." });
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const validateForm = () => {
         const newErrors = {};
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email pattern
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Password pattern
+
         if (!formData.storeName.trim()) newErrors.storeName = 'Store Name is required';
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!emailPattern.test(formData.email)) {
+            newErrors.email = 'Invalid email format';
+        }
         if (!formData.mobile.trim()) newErrors.mobile = 'Mobile Number is required';
         if (!formData.street.trim()) newErrors.street = 'Street is required';
         if (!formData.city.trim()) newErrors.city = 'City is required';
         if (!formData.state.trim()) newErrors.state = 'State is required';
         if (!formData.pincode.trim()) newErrors.pincode = 'Pincode is required';
-        if (!formData.password.trim()) newErrors.password = 'Password is required';
+        if (!formData.password.trim()) {
+            newErrors.password = 'Password is required';
+        } else if (!passwordPattern.test(formData.password)) {
+            newErrors.password = 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
+        }
         if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
@@ -91,7 +97,7 @@ function RetailerRegister() {
         e.preventDefault();
         if (validateForm()) {
             setErrors({});
-            setLoading(true); // Set loading state to true when submitting
+            setLoading(true);
             try {
                 const response = await axios.post("http://localhost:8080/auth/register", {
                     storeName: formData.storeName,
@@ -107,14 +113,14 @@ function RetailerRegister() {
                             street: formData.street,
                             city: formData.city,
                             state: formData.state,
-                            pinCode: formData.pinCode,
+                            pinCode: formData.pincode,
                         },
                     ],
                     image: photo,
                 });
-    
+
                 console.log("Response:", response);
-    
+
                 if (response.status === 200 && response.data.success) {
                     console.log("Registration Successful:", response.data);
                     navigate("/login"); // Redirect to login on successful registration
@@ -124,26 +130,22 @@ function RetailerRegister() {
                 }
             } catch (error) {
                 console.error("Error details:", error);
-    
+
                 if (error.response) {
-                    // API responded with an error status code
                     console.error("Error response data:", error.response.data);
                     setApiError(error.response.data.message || "Something went wrong.");
                 } else if (error.request) {
-                    // No response received from the server
                     console.error("Error request:", error.request);
                     setApiError("Unable to connect to the server.");
                 } else {
-                    // Other errors
                     console.error("Error message:", error.message);
                     setApiError("An unexpected error occurred. Please try again.");
                 }
             } finally {
-                setLoading(false); // Set loading state to false after the request completes
+                setLoading(false);
             }
         }
     };
-    
 
     return (
         <div className="max-w-xl mx-auto m-12 p-6 border rounded rounded-5 shadow-xl bg-white">
@@ -151,47 +153,47 @@ function RetailerRegister() {
             <form onSubmit={handleSubmit}>
                 {/* Profile photo upload button */}
                 <div style={{ textAlign: "center", marginBottom: "20px" }}>
-      <label htmlFor="photoUpload" style={{ cursor: "pointer" }}>
-        <div
-          style={{
-            width: "150px",
-            height: "150px",
-            borderRadius: "50%",
-            backgroundColor: "#f0f0f0",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            overflow: "hidden",
-            margin: "0 auto",
-            border: "2px solid #ddd",
-          }}
-        >
-          {photo ? (
-            <img
-              src={photo}
-              alt="Uploaded"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
-          ) : (
-            <span style={{ color: "#888" }}>
-              {isUploading ? "Uploading..." : "Add Store Image"}
-            </span>
-          )}
-        </div>
-      </label>
-      <input
-        type="file"
-        id="photoUpload"
-        style={{ display: "none" }}
-        accept="image/*"
-        onChange={handlePhotoChange}
-      />
-      {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
-    </div>
+                    <label htmlFor="photoUpload" style={{ cursor: "pointer" }}>
+                        <div
+                            style={{
+                                width: "150px",
+                                height: "150px",
+                                borderRadius: "50%",
+                                backgroundColor: "#f0f0f0",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                overflow: "hidden",
+                                margin: "0 auto",
+                                border: "2px solid #ddd",
+                            }}
+                        >
+                            {photo ? (
+                                <img
+                                    src={photo}
+                                    alt="Uploaded"
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            ) : (
+                                <span style={{ color: "#888" }}>
+                                    {isUploading ? "Uploading..." : "Add Store Image"}
+                                </span>
+                            )}
+                        </div>
+                    </label>
+                    <input
+                        type="file"
+                        id="photoUpload"
+                        style={{ display: "none" }}
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                    />
+                    {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
+                </div>
 
                 {/* Store Name and Retailer Name fields */}
                 <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
@@ -244,7 +246,7 @@ function RetailerRegister() {
                         onChange={handleInputChange}
                         style={{
                             width: "100%",
-                            padding: "10px",
+                            padding: " 10px",
                             marginTop: "5px",
                             borderRadius: "5px",
                             border: "1px solid #ccc"
@@ -274,7 +276,7 @@ function RetailerRegister() {
                 </div>
 
                 <div style={{ border: "2px solid #D3D3D3", borderRadius: "5px", padding: "20px", marginBottom: "15px" }}>
-                    <h3 style={{ marginBottom: "15px", textAlign: "center", fontWeight: "bold"}}>Address Details</h3>
+                    <h3 style={{ marginBottom: "15px", textAlign: "center", fontWeight: "bold" }}>Address Details</h3>
 
                     <div style={{ marginBottom: "15px" }}>
                         <label>Address Type<span style={{ color: "red" }}>*</span></label>
@@ -302,7 +304,7 @@ function RetailerRegister() {
                                     value="Permanent"
                                     checked={formData.addressType === 'Permanent'}
                                     onChange={handleRadioChange}
-                                    style={{ display: "none" }} // Hide the default radio button
+                                    style={{ display: "none" }}
                                 />
                                 <label htmlFor="permanent" style={{ cursor: "pointer" }}>Permanent</label>
                             </div>
@@ -330,7 +332,7 @@ function RetailerRegister() {
                                     value="Current"
                                     checked={formData.addressType === 'Current'}
                                     onChange={handleRadioChange}
-                                    style={{ display: "none" }} // Hide the default radio button
+                                    style={{ display: "none" }}
                                 />
                                 <label htmlFor="current" style={{ cursor: "pointer" }}>Current</label>
                             </div>
@@ -457,35 +459,34 @@ function RetailerRegister() {
                 </div>
                 {apiError && <p style={{ color: "red", fontSize: "14px", marginTop: "10px" }}>{apiError}</p>}
 
-
                 <button
-          type="submit"
-          style={{
-            width: "100%",
-    padding: "10px",
-    marginTop: "10px",
-    backgroundColor: "#28a745",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    display: "flex",        // Use flex to align text and spinner
-    justifyContent: "center", // Center content (horizontally) by default
-    alignItems: "center",   // Vertically center the text and spinner
-    gap: "10px",     
-          }}
-        >
-          {loading ? (
-            <>
-                <span>Loading...</span>
-                <div className="spinner center"></div>
-            </>
-          ) : (
-            "Register"
-          )}
-        </button>
+                    type="submit"
+                    style={{
+                        width: "100%",
+                        padding: "10px",
+                        marginTop: "10px",
+                        backgroundColor: "#28a745",
+                        color: "#fff",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        borderRadius: "5px",
+                        border: "none",
+                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "10px",
+                    }}
+                >
+                    {loading ? (
+                        <>
+                            <span>Loading...</span>
+                            <div className="spinner center"></div>
+                        </>
+                    ) : (
+                        "Register"
+                    )}
+                </button>
             </form>
 
             {/* Login link */}

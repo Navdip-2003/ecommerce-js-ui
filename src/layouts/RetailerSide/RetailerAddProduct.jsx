@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import Select from "react-select";
+import Cookies from "js-cookie";
 
 const RetailerAddProduct = () => {
   const navigate = useNavigate();
@@ -106,12 +107,13 @@ const RetailerAddProduct = () => {
             categoryId: category,
             subcategoryId: subcategory,
             size: selectedSizes,
-            colors: selectedColors,
+            colors: selectedColor,
             stock: parseInt(quantity), // Ensure quantity is an integer
             image: image,
-            retailerId: "retailer",
+            retailerId: userData.id,
             status: "ACTIVE", // You can modify this as needed
           };
+          console.log(productData)
 
     try {
       const response = await fetch("http://localhost:8080/product/add", {

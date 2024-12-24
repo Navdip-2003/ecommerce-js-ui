@@ -25,14 +25,31 @@ function Register() {
 
   const validateForm = () => {
     let formErrors = {};
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email regex
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;// Minimum eight characters, at least one letter and one number
+
     if (!formValues.firstName.trim()) formErrors.firstName = "First Name is required";
     if (!formValues.lastName.trim()) formErrors.lastName = "Last Name is required";
-    if (!formValues.email.trim()) formErrors.email = "Email is required";
+
+    if (!formValues.email.trim()) {
+      formErrors.email = "Email is required";
+    } else if (!emailPattern.test(formValues.email)) {
+      formErrors.email = "Invalid email format (e.g., example@mail.com)";
+    }
     if (!formValues.mobile.trim()) formErrors.mobile = "Mobile Number is required";
-    if (!formValues.password.trim()) formErrors.password = "Password is required";
-    if (!formValues.confirmPassword.trim()) formErrors.confirmPassword = "Confirm Password is required";
-    if (formValues.password !== formValues.confirmPassword)
+
+    if (!formValues.password.trim()) {
+      formErrors.password = "Password is required";
+    } else if (!passwordPattern.test(formValues.password)) {
+      formErrors.password =
+        "Password must be at least 8 characters long and include at least one letter and one number";
+    }
+
+    if (!formValues.confirmPassword.trim()) {
+      formErrors.confirmPassword = "Confirm Password is required";
+    } else if (formValues.password !== formValues.confirmPassword) {
       formErrors.confirmPassword = "Passwords do not match";
+    }
 
     return formErrors;
   };
@@ -238,25 +255,25 @@ function Register() {
           type="submit"
           style={{
             width: "100%",
-    padding: "10px",
-    marginTop: "10px",
-    backgroundColor: "#28a745",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    display: "flex",        // Use flex to align text and spinner
-    justifyContent: "center", // Center content (horizontally) by default
-    alignItems: "center",   // Vertically center the text and spinner
-    gap: "10px",     
+            padding: "10px",
+            marginTop: "10px",
+            backgroundColor: "#28a745",
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight: "bold",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",        // Use flex to align text and spinner
+            justifyContent: "center", // Center content (horizontally) by default
+            alignItems: "center",   // Vertically center the text and spinner
+            gap: "10px",
           }}
         >
           {loading ? (
             <>
-                <span>Loading...</span>
-                <div className="spinner center"></div>
+              <span>Loading...</span>
+              <div className="spinner center"></div>
             </>
           ) : (
             "Register"
